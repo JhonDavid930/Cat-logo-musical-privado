@@ -1,5 +1,13 @@
 # Historial de cambios
 
+## 2026-09-15 · Catálogo de Spotify incorporado
+
+- Añadido un importador repetible que concilia masters por ISRC/Spotify Track ID y lanzamientos por Spotify Album ID/UPC.
+- Incorporadas 76 grabaciones y 20 lanzamientos; enriquecidas 13 grabaciones y dos lanzamientos existentes; creadas 88 relaciones.
+- Conservados como fichas separadas cuatro títulos con UPC contradictorio. Ningún dato previo ni registro legal fue sobrescrito.
+- SQLite y PostgreSQL contienen 142 entidades, 137 relaciones y los 107 registros legales originales. Copias previas y fuentes permanecen excluidas de Git.
+- Añadidas dos pruebas de importación; la suite consolidada pasa 30 pruebas y TypeScript.
+
 ## 2026-09-15 · Auditoría del catálogo público de Spotify
 
 - Consultado el perfil oficial mediante Spotify Web API y una conexión local existente, sin copiar ni publicar credenciales.

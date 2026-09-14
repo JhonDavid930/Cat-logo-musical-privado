@@ -18,6 +18,8 @@ npm run dev
 
 Abre http://127.0.0.1:3010. El puerto 3010 identifica Catalog Control y evita interferir con otros proyectos de este ordenador. El modo DEV está limitado a este ordenador. Usa SQLite local en `private/catalog.sqlite`; Docker usa PostgreSQL propio. Si existe `private/catalog.json`, la base local nueva lo importa una sola vez. No hay dependencia de Supabase alojado ni pagos integrados.
 
+La conciliación de una extracción privada de Spotify se previsualiza con `npm run import:spotify` y se aplica a SQLite con `npm run import:spotify -- --apply`. El archivo de origen permanece en `private/` y no forma parte del repositorio. Crea una copia ZIP completa antes de aplicar otra extracción; el importador no escribe directamente en PostgreSQL ni acredita autoría o registros legales.
+
 ## Lo que puedes hacer
 
 - Buscar por título, autor, letra, género o código, incluyendo grabaciones relacionadas.

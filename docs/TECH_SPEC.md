@@ -38,6 +38,12 @@ erDiagram
 
 `registrations`: entidad, estado, aplicabilidad independiente, enlace de evidencia, fecha de revisión, notas y declaraciones originales. `documents`: categoría, ficha propietaria, enlace HTTPS opcional, notas y metadatos binarios opcionales. No se descargan automáticamente URLs ni se ejecuta HTML importado. `metadata` almacena revisión global y cobertura; `audit_log` registra revisiones y número de fichas, sin contraseñas.
 
+## Importación de Spotify
+
+`src/lib/spotify-import.ts` concilia una extracción privada del Spotify Web API sin depender de títulos como identidad primaria. Las grabaciones se identifican por ISRC y, si falta, por Spotify Track ID. Los lanzamientos se identifican primero por Spotify Album ID y después por UPC compatible. Un título idéntico con UPC distinto crea otro lanzamiento y conserva ambas declaraciones para revisión.
+
+La operación es repetible: usa UUID deterministas y evita duplicar fichas o relaciones. Añade `sourceRecords` y `sourceUrls`, marca como publicado lo que aparece en el perfil y relaciona lanzamiento con grabación. Solo enlaza una grabación a una composición existente cuando la coincidencia de título o versión es única; nunca crea composiciones, autorías, sociedades ni estados legales desde Spotify. `npm run import:spotify` presenta una vista previa y `npm run import:spotify -- --apply` escribe en SQLite con control de revisión.
+
 ## Cálculos
 
 El contrato JSON tiene `version: 1`, `revision`, `importedAt`, `sourceSummary`, `entities`, `links`, `registrations`, `credits`, `documents` y `proOrganizations`. Una escritura sustituye las colecciones en transacción y aumenta la revisión; `proOrganizations` se une a la lista existente. SQLite usa transacción inmediata; PostgreSQL bloquea la fila de revisión con `FOR UPDATE`. El audit log registra guardados, pero no es un historial recuperable de todas las versiones.

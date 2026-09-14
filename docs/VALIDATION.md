@@ -2,6 +2,10 @@
 
 ## Actualización: 2026-09-15
 
+Importación de Spotify aplicada después de crear copias ZIP completas separadas para SQLite y PostgreSQL. Resultado en ambos almacenamientos: 142 entidades —14 composiciones, 93 grabaciones, cinco vídeos y 30 lanzamientos—, 137 relaciones y 107 registros legales. Se añadieron 76 masters y 20 lanzamientos; 13 masters y dos lanzamientos existentes recibieron fuentes de Spotify. Cuatro UPC contradictorios se conservaron en fichas separadas y no se sobrescribió ninguno.
+
+El importador se probó con dos masters de igual título y distinto ISRC, conflicto de UPC, enlace único a composición y segunda ejecución sin duplicados. La suite consolidada contiene 30 pruebas superadas y TypeScript no reporta errores. La comprobación no demuestra titularidad, autoría ni exactitud contractual de los metadatos públicos; esas conclusiones requieren documentación del distribuidor o de la sociedad correspondiente.
+
 Creado el proyecto local permanente `catalog-control` sin detener otros proyectos. `catalog-control-app-1` usa `catalog-control-app:0.1.0` y publica exclusivamente `127.0.0.1:3010`; `catalog-control-db-1` usa `postgres:18-bookworm` sin publicar PostgreSQL. Ambos healthchecks están saludables. La ruta devolvió HTTP 200 y el título esperado de David Appleton.
 
 Se generó un ZIP privado desde SQLite y se restauró mediante la API autenticada en PostgreSQL. El origen contenía 46 entidades, 107 registros y cero binarios; PostgreSQL devolvió los mismos recuentos. La base SQLite no se reemplazó. Chart Intelligence Platform sigue siendo el propietario del puerto 3000. Los secretos y la contraseña inicial permanecen bajo `private/`, excluidos de Git y del Build.
