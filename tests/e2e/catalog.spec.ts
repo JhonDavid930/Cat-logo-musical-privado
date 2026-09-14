@@ -1,6 +1,8 @@
 import { test, expect } from "@playwright/test";
 import type { Catalog } from "../../src/lib/catalog";
 
+const testOrigin = process.env.TEST_BASE_URL || "http://127.0.0.1:3010";
+
 test("búsqueda sin acentos, ficha unificada, registros y archivos", async ({
   page,
 }) => {
@@ -10,16 +12,23 @@ test("búsqueda sin acentos, ficha unificada, registros y archivos", async ({
   await page
     .getByRole("textbox", { name: "Buscar en mi música" })
     .fill("bilingue");
-  await expect(page.locator(".song-row")).toHaveCount(1);
-  await page.locator(".song-row").click();
+  const song = page.locator(".song-row").filter({
+    has: page.locator(".song-title strong", { hasText: /^Bilingüe$/ }),
+  });
+  await expect(song).toHaveCount(1);
+  await song.click();
   await expect(
-    page.getByRole("heading", { name: "BILINGUE", exact: true }),
+    page.getByRole("heading", {
+      name: "Bilingüe",
+      exact: true,
+      level: 1,
+    }),
   ).toBeVisible();
   await expect(
-    page.getByText("Porcentaje sin confirmar", { exact: true }),
+    page.getByText("Porcentaje sin confirmar", { exact: true }).first(),
   ).toBeVisible();
   await page.getByRole("button", { name: "Registros", exact: true }).click();
-  await expect(page.locator(".registration")).toHaveCount(10);
+  await expect(page.locator(".registration")).toHaveCount(11);
   await page.locator(".registration").first().locator("summary").click();
   await expect(
     page
@@ -35,6 +44,38 @@ test("búsqueda sin acentos, ficha unificada, registros y archivos", async ({
     page.getByRole("heading", { name: "Añadir información o un enlace" }),
   ).toBeVisible();
   expect(errors).toEqual([]);
+});
+
+test("un título aparece una vez y abre sus registros técnicos", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("button", { name: /Mi música/ }).click();
+  await expect(page.getByLabel("Mostrar")).toHaveValue("songs");
+  await page
+    .getByRole("textbox", { name: "Buscar en mi música" })
+    .fill("alli estare");
+  const song = page.locator(".song-row").filter({
+    has: page.locator(".song-title strong", { hasText: /^Allí estaré$/ }),
+  });
+  await expect(song).toHaveCount(1);
+  await expect(song).toContainText("1 composición");
+  await expect(song).toContainText("2 grabaciones");
+  await expect(song).toContainText("2 ISRC");
+  await song.click();
+  await expect(
+    page.getByRole("heading", { name: "Allí estaré", exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.locator(".related-card").filter({
+      has: page.locator("strong", { hasText: /^Allí Estaré$/ }),
+    }),
+  ).toHaveCount(1);
+  await expect(
+    page.locator(".related-card").filter({
+      has: page.locator("strong", { hasText: /^Allí estaré$/ }),
+    }),
+  ).toHaveCount(1);
 });
 
 test("edición persistente, evidencia explícita y exportación recuperable", async ({
@@ -106,7 +147,7 @@ test("edición persistente, evidencia explícita y exportación recuperable", as
       await request.get("/api/catalog")
     ).json()) as Catalog;
     const response = await request.put("/api/catalog", {
-      headers: { origin: "http://127.0.0.1:3010" },
+      headers: { origin: testOrigin },
       data: { ...original, revision: latest.revision },
     });
     expect(response.ok()).toBe(true);
@@ -128,7 +169,7 @@ test("rechaza guardado desde otro origen y revisiones antiguas", async ({
   expect(
     (
       await request.put("/api/catalog", {
-        headers: { origin: "http://127.0.0.1:3010" },
+        headers: { origin: testOrigin },
         data: { ...original, revision: Math.max(0, original.revision - 1) },
       })
     ).status(),

@@ -2,11 +2,19 @@
 
 ## Actualización: 2026-09-15
 
+La vista principal se comprobó sobre las 210 entidades actuales de PostgreSQL: genera 79 canciones visibles. La auditoría confirmó grupos representativos como ALLI ESTARE —una composición, dos grabaciones y dos ISRC— y BILINGUE —composición, dos grabaciones, vídeo y lanzamiento—; versiones tituladas de forma distinta permanecen separadas. No se modificó ningún dato del catálogo durante esa auditoría.
+
+La suite consolidada pasa 42 pruebas unitarias, TypeScript y Build. Doce pruebas Playwright generales pasan en un servidor DEV aislado, incluyendo búsqueda sin tildes, una sola fila para ALLI ESTARE, acceso a sus dos grabaciones, edición/restauración, accesibilidad automática en ambos temas y responsive en 375/768/1024/1440. Otros cinco recorridos aislados validan subida y lectura de archivos, audio/vídeo, Word, Excel, ZIP, recuperación, géneros, créditos, UPC, PRO y eliminación segura. `npm audit --omit=dev` no detecta vulnerabilidades. El contenedor permanente `catalog-control-app-1` se reconstruyó con la nueva imagen y ambos servicios permanecen saludables. La validación no afirma que títulos realmente distintos pero escritos igual representen siempre la misma obra; por eso las entidades originales siguen separadas y accesibles.
+
+La auditoría visual recorrió dashboard, biblioteca, detalle, registros, archivos, créditos, edición, eliminación y copias de seguridad. Se corrigieron la longitud del dashboard, el contador ambiguo de fichas, la capitalización importada de los títulos, la repetición de créditos en edición y el encabezado estrecho de 375 píxeles. Las capturas de evidencia permanecen en `private/audit-premium-2026-09-15/`, fuera de Git por contener datos del catálogo.
+
 El CRUD completo se verificó con 37 pruebas unitarias y un flujo Playwright aislado: el botón de eliminación permanece deshabilitado hasta escribir el título exacto, elimina una grabación con su registro y relación, y conserva la composición relacionada. El mismo conjunto aislado volvió a comprobar creación/edición de lanzamientos, persistencia, vista móvil y accesibilidad. No se eliminó ninguna ficha del catálogo real durante estas pruebas.
 
 Las diez relaciones `Distributor` de los lanzamientos originales de Notion se resolvieron directamente: ocho corresponden a Amuse y dos a Diskover Co. Se añadió persistencia del campo a la prueba de lanzamientos compartidos. El dato se conserva en SQLite y PostgreSQL y aparece en el editor de lanzamientos relacionados; los 20 lanzamientos procedentes únicamente de Spotify siguen sin distribuidora declarada. La prueba aislada de navegador para lanzamientos, edición, persistencia, móvil y accesibilidad volvió a pasar.
 
 Importados los CSV privados de BMI y SoundExchange en SQLite y PostgreSQL después de crear copias ZIP independientes antes de cada operación. Resultado final: 213 entidades —67 composiciones, 111 grabaciones, cinco vídeos y 30 lanzamientos—, 213 relaciones, 210 registros y 286 créditos. Las copias finales están en `private/backups/final-bmi-soundexchange-*-2026-09-15.zip`.
+
+Ese resultado es el estado inmediatamente posterior a la importación. El propietario eliminó después, mediante el CRUD, las tres grabaciones de estudios para piano ajenas a su catálogo. PostgreSQL quedó en revisión 11 con 210 entidades —67 composiciones, 108 grabaciones, cinco vídeos y 30 lanzamientos—, 213 relaciones, 207 registros, 283 créditos y cero documentos.
 
 BMI: 67 Title Numbers, 154 participantes, 54 estados Reconciled y 13 Pending Society Review. Se probaron encabezado/campos CSV, conciliación, estados, participantes con porcentaje nulo, ISWC repetido y segunda ejecución. SoundExchange: 65 SXID, 17 sin ISRC, 47 grabaciones conciliadas y 18 nuevas; 65 filas declaran Hold No. Se probaron conciliación por ISRC/SXID, filas sin ISRC, reparación de caracteres dañados, crédito profesional de intérprete y segunda ejecución. El propietario confirmó que David Appleton es su nombre artístico como intérprete, Jhon David Valdez Calier su nombre legal y que los títulos de la exportación corresponden a su catálogo.
 
@@ -42,17 +50,17 @@ Revisión documental: 2026-09-12. Se contrastaron fuentes del proyecto sin ejecu
 
 ## Último estado comprobado
 
-| Comprobación | Evidencia registrada el 10 de septiembre | Límite |
-|---|---|---|
-| Unitarias e integración SQLite | 28 pruebas superadas al cerrar sociedades compartidas | Sin PostgreSQL real |
-| TypeScript y Build standalone | Correctos tras la última corrección | No es Build de imagen Docker |
-| Empaquetado | Postbuild sin datos privados ni archivos de entorno | No acredita permisos de volúmenes |
-| Suite aislada de navegador | Cuatro flujos superados en ampliación UPC/PRO; después se repitió el flujo de lanzamientos/PRO con sociedades compartidas y pasó | Los otros tres flujos no se repitieron tras esa última corrección |
-| Autenticación de producción aislada | Login correcto, anónimo/contraseña incorrecta/sesión manipulada rechazados; cookie protegida | Ensayo anterior a última corrección de PRO |
-| a11y y responsive | axe AA sin infracciones detectadas en pantallas ensayadas; 375/768/1024/1440, temas claro/oscuro; revisión visual de capturas | No equivale a auditoría manual con lector de pantalla ni iPhone físico |
-| Barras de progreso | Regresión de valores, desconocidos y reduced-motion superada | Basada en registros disponibles, no inventario estimado |
-| npm audit producción | Cero vulnerabilidades reportadas en esa ejecución | Resultado histórico, no garantía futura |
-| Compose base/HTTPS | Configuración parseada correctamente | Ningún contenedor arrancado con ello |
+| Comprobación                        | Evidencia registrada el 10 de septiembre                                                                                         | Límite                                                                 |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| Unitarias e integración SQLite      | 28 pruebas superadas al cerrar sociedades compartidas                                                                            | Sin PostgreSQL real                                                    |
+| TypeScript y Build standalone       | Correctos tras la última corrección                                                                                              | No es Build de imagen Docker                                           |
+| Empaquetado                         | Postbuild sin datos privados ni archivos de entorno                                                                              | No acredita permisos de volúmenes                                      |
+| Suite aislada de navegador          | Cuatro flujos superados en ampliación UPC/PRO; después se repitió el flujo de lanzamientos/PRO con sociedades compartidas y pasó | Los otros tres flujos no se repitieron tras esa última corrección      |
+| Autenticación de producción aislada | Login correcto, anónimo/contraseña incorrecta/sesión manipulada rechazados; cookie protegida                                     | Ensayo anterior a última corrección de PRO                             |
+| a11y y responsive                   | axe AA sin infracciones detectadas en pantallas ensayadas; 375/768/1024/1440, temas claro/oscuro; revisión visual de capturas    | No equivale a auditoría manual con lector de pantalla ni iPhone físico |
+| Barras de progreso                  | Regresión de valores, desconocidos y reduced-motion superada                                                                     | Basada en registros disponibles, no inventario estimado                |
+| npm audit producción                | Cero vulnerabilidades reportadas en esa ejecución                                                                                | Resultado histórico, no garantía futura                                |
+| Compose base/HTTPS                  | Configuración parseada correctamente                                                                                             | Ningún contenedor arrancado con ello                                   |
 
 ## Qué cubren los escenarios
 
@@ -96,4 +104,3 @@ La incidencia de Docker del 10 de septiembre está en [DOCKER_LOCAL_ISSUE.md](DO
 ## Revisión documental del 12 de septiembre
 
 Se verificaron nombres/rutas contra package.json, configuraciones Playwright/Compose, Dockerfile, scripts, schema/migraciones, contrato, almacenamiento y Route Handlers. Se corrigieron afirmaciones antiguas sobre archivos solo enlazados, migración 001 inexistente, resultados acumulados y configuración de arranque. Se comprobaron enlaces locales de documentación. No se ejecutaron Build/tests, servicios, importaciones ni operaciones sobre datos o infraestructura en esta revisión.
-

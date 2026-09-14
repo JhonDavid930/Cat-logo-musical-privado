@@ -12,8 +12,6 @@ import {
   kindLabels,
   progress,
   removeEntity,
-  registrationsFor,
-  relatedIds,
   statusLabels,
   type Catalog,
   type Credit,
@@ -31,6 +29,7 @@ import NewRegistrationForm from "./new-registration-form";
 import OrganizationField from "./organization-field";
 import { registrationLabel } from "@/lib/registration-label";
 import { genreSources, genreSummary } from "@/lib/genres";
+import { songContextIds, songGroupForEntity } from "@/lib/song-groups";
 
 export default function EntityDetail({
   entity,
@@ -49,15 +48,19 @@ export default function EntityDetail({
 }) {
   const [tab, setTab] = useState("summary");
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
-  const ids = relatedIds(catalog, entity.id),
+  const songTitle =
+    songGroupForEntity(catalog, entity.id)?.title ?? entity.title;
+  const ids = songContextIds(catalog, entity.id),
     related = catalog.entities.filter(
       (e) => e.id !== entity.id && ids.has(e.id),
     ),
-    registrations = registrationsFor(catalog, entity.id),
+    registrations = catalog.registrations.filter((registration) =>
+      ids.has(registration.entityId),
+    ),
     p = progress(registrations),
     documents = catalog.documents.filter((d) => ids.has(d.entityId)),
     credits = catalog.credits.filter(
-      (c) => c.entityId === entity.id && c.scope !== "professional",
+      (c) => ids.has(c.entityId) && c.scope !== "professional",
     );
   const patchEntity = async (patch: Partial<Entity>) =>
     save({
@@ -70,7 +73,7 @@ export default function EntityDetail({
     <article className="detail">
       <header className="detail-header">
         <p className="eyebrow">{kindLabels[entity.kind]} · ARCHIVO PERSONAL</p>
-        <h1>{entity.title}</h1>
+        <h1>{songTitle}</h1>
         <div className="detail-meta">
           <span
             title={genreSources(catalog, entity.id)
@@ -171,7 +174,7 @@ export default function EntityDetail({
               </h2>
               <ProgressMeter
                 value={p.declaredPercent}
-                label={`${entity.title}: registros declarados`}
+                label={`${songTitle}: registros declarados`}
               />
               <div className="meter-caption">
                 <span>Evidencia revisada</span>
@@ -181,7 +184,7 @@ export default function EntityDetail({
               </div>
               <ProgressMeter
                 value={p.verifiedPercent}
-                label={`${entity.title}: evidencia revisada`}
+                label={`${songTitle}: evidencia revisada`}
                 tone="verified"
               />
               <p>
@@ -507,12 +510,6 @@ export default function EntityDetail({
               {busy ? "Guardando…" : "Guardar cambios"}
             </button>
           </form>
-          <ProfessionalCredits
-            catalog={catalog}
-            entityId={entity.id}
-            save={save}
-            busy={busy}
-          />
           {entity.kind === "work" && (
             <section className="panel">
               <h2>Autores y porcentajes</h2>

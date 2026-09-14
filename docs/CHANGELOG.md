@@ -1,5 +1,15 @@
 # Historial de cambios
 
+## 2026-09-15 · Vista unificada por canción
+
+- “Mi espacio” y “Mi música” abren en una vista de 79 canciones en lugar de presentar las 210 fichas técnicas actuales como títulos independientes.
+- La agrupación visual ignora mayúsculas, tildes, apóstrofes, guiones y espacios equivalentes; los nombres explícitos de versiones, como Acoustic, Remix o Remastered, siguen separados.
+- Cada fila resume cuántas composiciones, grabaciones e ISRC contiene. Al abrirla, la ficha reúne registros, documentos, géneros, créditos y accesos a todas sus fichas técnicas.
+- Las entidades y relaciones originales permanecen separadas en la base de datos. Los filtros Composiciones, Grabaciones, Vídeos y Lanzamientos permiten auditarlas individualmente.
+- El dashboard presenta ocho canciones y un acceso claro a la biblioteca completa; el contador principal distingue 79 canciones de 210 fichas técnicas.
+- Se prioriza el título con capitalización y acentos legibles, se eliminó la edición duplicada de créditos y se corrigió la cabecera de biblioteca en móvil.
+- Verificadas 42 pruebas unitarias, 12 recorridos Playwright generales, cinco recorridos aislados, Build, TypeScript y auditoría de dependencias sin vulnerabilidades de producción.
+
 ## 2026-09-15 · CRUD completo y eliminación segura
 
 - Añadida una zona de eliminación en `Editar ficha` para composiciones, grabaciones, vídeos y lanzamientos.
@@ -118,4 +128,3 @@ Al cierre de esa primera fase estaban pendientes el inventario completo, Drive/W
 - Lista compartida persistente de sociedades PRO en SQLite/PostgreSQL, con migración de nombres existentes y copias JSON/ZIP compatibles con versiones anteriores.
 - Selector compartido al crear/editar registros; deduplicación por espacios/mayúsculas conservando nombres distintos.
 - Otra sociedad exige un nombre no vacío. Editar un formulario oculta el aviso anterior de Cambios guardados para distinguir el borrador.
-

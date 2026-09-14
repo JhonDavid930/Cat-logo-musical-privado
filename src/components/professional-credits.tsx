@@ -1,12 +1,8 @@
 "use client";
 import { useId, useState } from "react";
 import { ExternalLink } from "lucide-react";
-import {
-  kindLabels,
-  relatedIds,
-  type Catalog,
-  type Credit,
-} from "@/lib/catalog";
+import { kindLabels, type Catalog, type Credit } from "@/lib/catalog";
+import { songContextIds } from "@/lib/song-groups";
 import type { SaveCatalog } from "./catalog-app";
 export const professionalRoles = [
   "Compositor",
@@ -34,7 +30,7 @@ export function CreditSummary({
   catalog: Catalog;
   entityId: string;
 }) {
-  const ids = relatedIds(catalog, entityId);
+  const ids = songContextIds(catalog, entityId);
   const credits = catalog.credits.filter(
     (credit) => ids.has(credit.entityId) && credit.scope === "professional",
   );
@@ -92,7 +88,7 @@ export default function ProfessionalCredits({
   save: SaveCatalog;
   busy: boolean;
 }) {
-  const ids = relatedIds(catalog, entityId);
+  const ids = songContextIds(catalog, entityId);
   const entities = catalog.entities.filter((entity) => ids.has(entity.id));
   const credits = catalog.credits.filter(
     (credit) => ids.has(credit.entityId) && credit.scope === "professional",

@@ -1,7 +1,8 @@
 "use client";
 import { useRef, useState } from "react";
 import { Upload } from "lucide-react";
-import { catalogSchema, relatedIds, type Catalog } from "@/lib/catalog";
+import { catalogSchema, type Catalog } from "@/lib/catalog";
+import { songContextIds } from "@/lib/song-groups";
 import { documentLabels, MAX_FILE_BYTES } from "@/lib/file-policy";
 import type { SaveCatalog } from "./catalog-app";
 import DocumentCard from "./document-card";
@@ -25,7 +26,7 @@ export default function FilesPanel({
     [uploading, setUploading] = useState(false),
     [status, setStatus] = useState("");
   const fileInput = useRef<HTMLInputElement>(null);
-  const ids = relatedIds(catalog, entityId);
+  const ids = songContextIds(catalog, entityId);
   const documents = catalog.documents.filter((document) =>
     ids.has(document.entityId),
   );

@@ -24,6 +24,7 @@ Los catálogos oficiales en CSV se previsualizan con `npm run import:bmi` y `npm
 
 ## Lo que puedes hacer
 
+- Ver una sola fila por canción aunque composición, grabaciones, vídeo o lanzamiento repitan el título con distintas mayúsculas, tildes o signos. Cada ficha conserva dentro todos los registros técnicos e ISRC.
 - Buscar por título, autor, letra, género o código, incluyendo grabaciones relacionadas.
 - Crear, consultar, editar y eliminar fichas; la eliminación confirmada limpia sus relaciones, registros, créditos y archivos directos sin borrar otras versiones o lanzamientos relacionados.
 - Registrar estados por entidad, sociedad PRO concreta, aplicabilidad y evidencia revisada por separado.

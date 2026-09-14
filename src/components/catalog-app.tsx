@@ -35,9 +35,14 @@ import {
 } from "@/lib/catalog";
 import EntityDetail from "./entity-detail";
 import ProgressMeter from "./progress-meter";
+import {
+  buildSongGroups,
+  registrationsForSongGroup,
+  type SongGroup,
+} from "@/lib/song-groups";
 
 type View = "overview" | "library" | "pending" | "files" | "backup";
-type KindFilter = Entity["kind"] | "all";
+type KindFilter = Entity["kind"] | "songs";
 export type SaveCatalog = (next: Catalog) => Promise<boolean>;
 export default function CatalogApp({
   initial,
@@ -50,7 +55,7 @@ export default function CatalogApp({
     [view, setView] = useState<View>("overview"),
     [query, setQuery] = useState(""),
     [selected, setSelected] = useState<string | null>(null),
-    [kind, setKind] = useState<KindFilter>("all"),
+    [kind, setKind] = useState<KindFilter>("songs"),
     [statusFilter, setStatusFilter] = useState("all"),
     [agency, setAgency] = useState("all"),
     [message, setMessage] = useState(""),
@@ -116,20 +121,46 @@ export default function CatalogApp({
   const agencies = [
     ...new Set(catalog.registrations.map(registrationLabel)),
   ].sort();
-  const matches = searchEntities(catalog, query)
-    .filter((e) => kind === "all" || e.kind === kind)
-    .filter((e) => {
-      const registrations = registrationsFor(catalog, e.id).filter(
-        (r) => agency === "all" || registrationLabel(r) === agency,
-      );
-      return (
-        (agency === "all" || registrations.length > 0) &&
-        (statusFilter === "all" ||
-          (statusFilter === "attention"
-            ? registrations.some(needsAttention)
-            : registrations.some((r) => r.status === statusFilter)))
-      );
-    });
+  const songGroups = buildSongGroups(catalog);
+  const matchedEntityIds = new Set(
+    searchEntities(catalog, query).map((entity) => entity.id),
+  );
+  const matches: Array<Entity | SongGroup> = (
+    kind === "songs"
+      ? songGroups.filter((group) =>
+          group.entities.some((entity) => matchedEntityIds.has(entity.id)),
+        )
+      : catalog.entities.filter(
+          (entity) => entity.kind === kind && matchedEntityIds.has(entity.id),
+        )
+  ).filter((item) => {
+    const registrations = (
+      "primary" in item
+        ? registrationsForSongGroup(catalog, item)
+        : registrationsFor(catalog, item.id)
+    ).filter(
+      (registration) =>
+        agency === "all" || registrationLabel(registration) === agency,
+    );
+    return (
+      (agency === "all" || registrations.length > 0) &&
+      (statusFilter === "all" ||
+        (statusFilter === "attention"
+          ? registrations.some(needsAttention)
+          : registrations.some(
+              (registration) => registration.status === statusFilter,
+            )))
+    );
+  });
+  const actionableMatches = matches.filter((item) => {
+    const registrations =
+      "primary" in item
+        ? registrationsForSongGroup(catalog, item)
+        : registrationsFor(catalog, item.id);
+    return view !== "pending" || registrations.some(needsAttention);
+  });
+  const visibleMatches =
+    view === "overview" ? actionableMatches.slice(0, 8) : actionableMatches;
   const active = catalog.entities.find((e) => e.id === selected);
   const filteredDocuments = catalog.documents.filter((d) =>
     `${d.name} ${catalog.entities.find((e) => e.id === d.entityId)?.title ?? ""}`
@@ -353,10 +384,11 @@ export default function CatalogApp({
                   <section className="stats" aria-label="Resumen del catálogo">
                     <div>
                       <span className="stat-number">
-                        {String(catalog.entities.length).padStart(2, "0")}
+                        {String(songGroups.length).padStart(2, "0")}
                       </span>
-                      <span>Fichas en todo el catálogo</span>
+                      <span>Canciones en tu catálogo</span>
                       <small>
+                        {catalog.entities.length} fichas técnicas ·{" "}
                         {works.length} composiciones ·{" "}
                         {
                           catalog.entities.filter(
@@ -571,8 +603,8 @@ export default function CatalogApp({
                         value={kind}
                         onChange={(e) => setKind(e.target.value as KindFilter)}
                       >
-                        <option value="all">
-                          Todo el catálogo ({catalog.entities.length})
+                        <option value="songs">
+                          Canciones ({songGroups.length})
                         </option>
                         <option value="work">
                           Composiciones ({works.length})
@@ -635,65 +667,81 @@ export default function CatalogApp({
                     </label>
                   </div>
                   <div className="catalog-list">
-                    {matches
-                      .filter(
-                        (e) =>
-                          view !== "pending" ||
-                          registrationsFor(catalog, e.id).some(needsAttention),
-                      )
-                      .map((entity, index) => {
-                        const registrations = registrationsFor(
-                            catalog,
-                            entity.id,
-                          ),
-                          count = registrations.filter(needsAttention).length,
-                          related = relatedIds(catalog, entity.id),
-                          recordings = catalog.entities.filter(
-                            (e) => e.kind === "recording" && related.has(e.id),
-                          );
-                        return (
-                          <button
-                            className="song-row"
-                            key={entity.id}
-                            onClick={() => open(entity.id)}
+                    {visibleMatches.map((item, index) => {
+                      const group = "primary" in item ? item : undefined,
+                        entity = group?.primary ?? (item as Entity),
+                        registrations = group
+                          ? registrationsForSongGroup(catalog, group)
+                          : registrationsFor(catalog, entity.id),
+                        count = registrations.filter(needsAttention).length,
+                        related = relatedIds(catalog, entity.id),
+                        recordings = group
+                          ? group.entities.filter(
+                              (candidate) => candidate.kind === "recording",
+                            )
+                          : catalog.entities.filter(
+                              (candidate) =>
+                                candidate.kind === "recording" &&
+                                related.has(candidate.id),
+                            );
+                      const compositions = group
+                        ? group.entities.filter(
+                            (candidate) => candidate.kind === "work",
+                          ).length
+                        : 0;
+                      return (
+                        <button
+                          className="song-row"
+                          key={entity.id}
+                          onClick={() => open(entity.id)}
+                        >
+                          <span className="track-number">
+                            {String(index + 1).padStart(2, "0")}
+                          </span>
+                          <span className="song-title">
+                            <strong>{group?.title ?? entity.title}</strong>
+                            <small>
+                              {group
+                                ? [
+                                    compositions
+                                      ? `${compositions} ${compositions === 1 ? "composición" : "composiciones"}`
+                                      : "",
+                                    recordings.length
+                                      ? `${recordings.length} ${recordings.length === 1 ? "grabación" : "grabaciones"}`
+                                      : "",
+                                    group.isrcs.length
+                                      ? `${group.isrcs.length} ${group.isrcs.length === 1 ? "ISRC" : "ISRC"}`
+                                      : "",
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" · ") || "Canción"
+                                : kindLabels[entity.kind]}
+                              {genreSummary(catalog, entity.id)
+                                ? ` · ${genreSummary(catalog, entity.id)}`
+                                : ""}
+                              {!group && entity.kind === "work"
+                                ? ` · ${recordings.length} ${recordings.length === 1 ? "grabación" : "grabaciones"}`
+                                : ""}
+                            </small>
+                          </span>
+                          <span
+                            className={`status-tag ${count ? "pending" : "neutral"}`}
                           >
-                            <span className="track-number">
-                              {String(index + 1).padStart(2, "0")}
-                            </span>
-                            <span className="song-title">
-                              <strong>{entity.title}</strong>
-                              <small>
-                                {kindLabels[entity.kind]}
-                                {genreSummary(catalog, entity.id)
-                                  ? ` · ${genreSummary(catalog, entity.id)}`
-                                  : ""}
-                                {entity.kind === "work"
-                                  ? ` · ${recordings.length} ${recordings.length === 1 ? "grabación" : "grabaciones"}`
-                                  : ""}
-                              </small>
-                            </span>
-                            <span
-                              className={`status-tag ${count ? "pending" : "neutral"}`}
-                            >
-                              {count
-                                ? `${count} por revisar`
-                                : registrations.length
-                                  ? "Al día"
-                                  : "Sin comprobar"}
-                            </span>
-                            <ArrowRight
-                              size={18}
-                              className="row-arrow"
-                              aria-hidden
-                            />
-                          </button>
-                        );
-                      })}
-                    {!matches.filter(
-                      (e) =>
-                        view !== "pending" ||
-                        registrationsFor(catalog, e.id).some(needsAttention),
-                    ).length && (
+                            {count
+                              ? `${count} por revisar`
+                              : registrations.length
+                                ? "Al día"
+                                : "Sin comprobar"}
+                          </span>
+                          <ArrowRight
+                            size={18}
+                            className="row-arrow"
+                            aria-hidden
+                          />
+                        </button>
+                      );
+                    })}
+                    {!actionableMatches.length && (
                       <div className="empty">
                         <h3>No hay coincidencias.</h3>
                         <p>Prueba otro título o quita los filtros.</p>
@@ -709,6 +757,15 @@ export default function CatalogApp({
                       </div>
                     )}
                   </div>
+                  {view === "overview" && actionableMatches.length > 8 && (
+                    <div className="catalog-preview-footer">
+                      <span>8 de {actionableMatches.length} canciones</span>
+                      <button onClick={() => navigate("library")}>
+                        Ver toda mi música
+                        <ArrowRight size={16} />
+                      </button>
+                    </div>
+                  )}
                 </section>
               )}
               {(view === "overview" || view === "pending") && (

@@ -1,7 +1,8 @@
-import { relatedIds, type Catalog } from "./catalog";
+import { type Catalog } from "./catalog";
+import { songContextIds } from "./song-groups";
 
 export function genreSources(catalog: Catalog, entityId: string) {
-  const ids = relatedIds(catalog, entityId);
+  const ids = songContextIds(catalog, entityId);
   return catalog.entities.filter(
     (entity) =>
       ids.has(entity.id) &&

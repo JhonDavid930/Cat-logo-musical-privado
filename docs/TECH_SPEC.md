@@ -58,16 +58,18 @@ Cada entidad `release` admite un campo opcional `distributor` de hasta 150 carac
 
 El contrato JSON tiene `version: 1`, `revision`, `importedAt`, `sourceSummary`, `entities`, `links`, `registrations`, `credits`, `documents` y `proOrganizations`. Una escritura sustituye las colecciones en transacción y aumenta la revisión; `proOrganizations` se une a la lista existente. SQLite usa transacción inmediata; PostgreSQL bloquea la fila de revisión con `FOR UPDATE`. El audit log registra guardados, pero no es un historial recuperable de todas las versiones.
 
-| Relación | Origen → destino |
-|---|---|
-| `recording_work` | Grabación → composición |
-| `release_recording` | Lanzamiento → grabación |
-| `release_work` | Lanzamiento → composición |
-| `video_recording` | Vídeo → grabación |
+| Relación            | Origen → destino          |
+| ------------------- | ------------------------- |
+| `recording_work`    | Grabación → composición   |
+| `release_recording` | Lanzamiento → grabación   |
+| `release_work`      | Lanzamiento → composición |
+| `video_recording`   | Vídeo → grabación         |
 
 Estados: registered, in_progress, pending, unchecked, not_applicable. Denominador: únicamente registros de aplicabilidad yes, excluyendo not_applicable. La aplicabilidad unknown aparece separada. Cero aplicables devuelve null y se presenta como raya, no como 100 %. Declarado: estado registered. Verificado: además, evidencia HTTPS y fecha de revisión explícita. Tener ISWC, ISRC, UPC o país de registro no acredita un registro. La revisión es declaración del propietario después de consultar la evidencia; no una consulta automática a entidades.
 
-La ficha de obra reúne registros propios, grabaciones, lanzamientos directamente asociados y vídeos/lanzamientos de esas grabaciones. Los IDs se reúnen en un conjunto para no contarlos dos veces. Para otras clases de ficha, `registrationsFor` recoge solo sus registros propios. La búsqueda ignora tildes y encuentra la obra por códigos de sus grabaciones.
+`src/lib/song-groups.ts` construye la vista de canciones sin modificar la persistencia. Normaliza el título con Unicode NFKD, elimina marcas diacríticas, compara sin distinguir mayúsculas y trata apóstrofes, guiones, puntuación y espacios equivalentes. No elimina palabras de versión: Acoustic, Remix o Remastered producen grupos distintos. Cada grupo prefiere una composición como entrada, después una grabación con ISRC; conserva todos los ISRC y adjunta un lanzamiento solo cuando su título normalizado coincide. Un álbum con nombre diferente no se convierte en canción ni conecta entre sí sus pistas.
+
+La ficha unificada reúne los IDs del grupo y sus relaciones directas para mostrar registros, documentos, géneros, créditos, grabaciones, vídeos y lanzamientos. Los conjuntos evitan contar el mismo registro dos veces. Los filtros técnicos siguen mostrando cada entidad por separado para revisar su procedencia y editar códigos concretos. Esta agrupación es exclusivamente de presentación: no reescribe IDs, relaciones, títulos ni códigos en SQLite/PostgreSQL. La búsqueda ignora tildes y encuentra el grupo por códigos de sus grabaciones.
 
 ## Importación real y límites
 
@@ -161,20 +163,20 @@ El selector compartido está en `organization-field.tsx`, usado en creación y e
 
 ## Mapa de mantenimiento y migraciones
 
-| Fuente | Responsabilidad |
-|---|---|
-| `src/lib/catalog.ts` | Schema Zod portable, integridad, búsqueda y progreso |
-| `src/lib/storage.ts`, `database.ts`, `postgres.ts` | Selección de backend y transacciones |
-| `src/lib/files.ts`, `full-backup.ts`, `file-policy.ts` | Almacenamiento privado, validación, rangos y copias |
-| `scripts/preview-document.cjs` | Lectura Office limitada en proceso hijo |
-| `src/lib/release-codes.ts`, `pro-organizations.ts` | UPC/tipos y normalización de sociedades |
-| `src/lib/genres.ts`, `import-credits.ts` | Procedencia de géneros y enriquecimiento de créditos |
-| `src/components` | Formularios, ficha, paneles compartidos y dashboard |
-| `database/schema.sql`, `docker/init-db.sh` | Inicialización PostgreSQL nueva y rol de aplicación |
-| `database/migrations/002-registration-organizations.sql` | Sustituye restricción de registro por unicidad entidad/categoría/sociedad |
-| `database/migrations/003-pro-organizations.sql` | Crea catálogo de sociedades y recupera nombres existentes |
+| Fuente                                                   | Responsabilidad                                                                  |
+| -------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| `src/lib/catalog.ts`                                     | Schema Zod portable, integridad, búsqueda y progreso                             |
+| `src/lib/song-groups.ts`                                 | Agrupación visual por título equivalente, entrada principal y contexto unificado |
+| `src/lib/storage.ts`, `database.ts`, `postgres.ts`       | Selección de backend y transacciones                                             |
+| `src/lib/files.ts`, `full-backup.ts`, `file-policy.ts`   | Almacenamiento privado, validación, rangos y copias                              |
+| `scripts/preview-document.cjs`                           | Lectura Office limitada en proceso hijo                                          |
+| `src/lib/release-codes.ts`, `pro-organizations.ts`       | UPC/tipos y normalización de sociedades                                          |
+| `src/lib/genres.ts`, `import-credits.ts`                 | Procedencia de géneros y enriquecimiento de créditos                             |
+| `src/components`                                         | Formularios, ficha, paneles compartidos y dashboard                              |
+| `database/schema.sql`, `docker/init-db.sh`               | Inicialización PostgreSQL nueva y rol de aplicación                              |
+| `database/migrations/002-registration-organizations.sql` | Sustituye restricción de registro por unicidad entidad/categoría/sociedad        |
+| `database/migrations/003-pro-organizations.sql`          | Crea catálogo de sociedades y recupera nombres existentes                        |
 
 No existe migración 001 separada. El esquema inicial cumple ese papel; un volumen existente no reejecuta init-db.sh ni recibe actualizaciones por cambiar schema.sql. No hay un ejecutor automático de migraciones PostgreSQL: seguir [DEPLOY_GUIDE](DEPLOY_GUIDE.md). Los scripts de importación/enriquecimiento son operaciones sobre datos y no pasos normales de arranque.
 
 Las versiones citadas son las fijadas en package.json/package-lock.json al revisar este proyecto, no una afirmación de ser las más recientes dos años después. Antes de una actualización futura consultar la documentación correspondiente y conservar copias recuperables. Docker se revalidó el 14 de septiembre; la información del NAS sigue siendo la observación del día 10. scripts/test-docker.mjs reproduce el ensayo aislado y conserva recursos sintéticos detenidos para diagnóstico.
-
