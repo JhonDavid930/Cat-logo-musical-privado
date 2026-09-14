@@ -1,5 +1,12 @@
 # Historial de cambios
 
+## 2026-09-15 · Auditoría del catálogo público de Spotify
+
+- Consultado el perfil oficial mediante Spotify Web API y una conexión local existente, sin copiar ni publicar credenciales.
+- Recuperados 22 lanzamientos, 89 Track IDs y 69 títulos normalizados para el mercado ES.
+- La conciliación preliminar encontró 13 coincidencias por ISRC, una por título, una posible versión, 54 títulos candidatos y 17 lanzamientos candidatos.
+- El informe detallado permanece bajo `private/`; no se modificaron fichas ni estados del catálogo.
+
 ## 2026-09-15 · Roadmap de integraciones BMI y SoundExchange
 
 - Documentada una primera fase basada en exportación e importación de archivos oficiales, conciliación de identificadores, estados, diferencias y justificantes.

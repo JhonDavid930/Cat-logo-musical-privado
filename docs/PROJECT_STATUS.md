@@ -18,6 +18,8 @@ El 14 de septiembre Docker volvió a responder. Se añadió `scripts/test-docker
 
 El 15 de septiembre se creó el grupo local permanente `catalog-control`. Sus contenedores `catalog-control-app-1` y `catalog-control-db-1` están saludables, la aplicación responde en `http://127.0.0.1:3010` y PostgreSQL contiene una recuperación del catálogo SQLite actual con 46 entidades y 107 registros. El puerto 3000 pertenece a Chart Intelligence Platform y no se modificó. La contraseña local inicial se conserva fuera de Git en `private/LOGIN_PASSWORD_LOCAL.txt`.
 
+El mismo día se auditó el [perfil oficial de Spotify](https://open.spotify.com/artist/7KagVdHIz2wTVYXlQqb6jY) mediante una conexión API ya existente en el equipo, sin copiar sus credenciales. En mercado ES se obtuvieron 22 lanzamientos, 89 Track IDs y 69 títulos normalizados. Trece títulos coinciden por ISRC, uno por título y uno es una posible versión; quedan 54 títulos y 17 lanzamientos candidatos a revisar. Los candidatos no se importaron ni se marcaron automáticamente. El informe detallado, con enlaces e ISRC, está en `private/spotify-audit-refined-2026-09-15.md` y su JSON compañero, ambos excluidos de Git.
+
 ## Decisiones que hay que conservar
 
 | Decisión | Razón y consecuencia |
@@ -73,7 +75,7 @@ NAS identificado: Synology DS225+, 2 GB RAM, Container Manager instalado. Solo i
 ## Próximos pasos priorizados
 
 1. **Revisión del propietario y copia recuperable.** Criterio: confirmar agrupaciones/versiones y recuperar ZIP en catálogo de prueba conservando relaciones y originales; no marcar evidencia sin revisarla.
-2. **Completar inventario con alcance autorizado.** Criterio: fuentes/recuentos reconciliados y lista de faltantes; no usar la estimación de 70 canciones como denominador de progreso.
+2. **Revisar la auditoría de Spotify y completar el inventario.** Examinar los 54 títulos y 17 lanzamientos candidatos en `private/spotify-audit-refined-2026-09-15.md`. Varios títulos tienen dos ISRC y pueden representar grabaciones o reediciones distintas; no fusionarlos solo por nombre. Criterio: cada candidato queda vinculado a una ficha existente, creado con su versión/lanzamiento correcto o descartado con motivo; fuentes y recuentos reconciliados sin usar la estimación de 70 canciones como denominador.
 3. **Crear el módulo de integraciones para BMI y SoundExchange.** Primera fase sin credenciales ni automatización de portales: exportar archivos oficiales, importar CSV/Excel de respuesta o historial, conciliar por ISWC/ISRC/UPC/título/titulares y registrar fecha, estado, diferencias y justificantes. SoundExchange debe soportar su Bulk Import y el CSV de Upload History; BMI debe trabajar con archivos descargados o aceptados por Online Services. Una sincronización directa solo se habilitará si la entidad concede una API o data feed oficial con autenticación por token. Criterio: ida y vuelta probada con fixtures sin datos personales, previsualización antes de aplicar cambios, informe de diferencias y ningún estado marcado como confirmado sin evidencia.
 4. **Cerrar límites restantes de infraestructura antes del traslado.** El ensayo Docker/PostgreSQL local ya pasó. Pendiente medir carga/tamaños grandes y validar el acceso HTTPS elegido. La prueba no cubre todos los formatos/códecs ni cortes eléctricos ni el hardware del NAS.
 5. **Preparar traslado revisable y obtener aprobación.** Criterio: imagen linux/amd64, secretos externos, backup recuperable, consumo medido y plan HTTPS/red. Solo después de aprobación trasladar al NAS y comprobar allí salud/recuperación.
