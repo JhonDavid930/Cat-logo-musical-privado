@@ -121,6 +121,16 @@ La entrada nueva o modificada de códigos admite UPC-A de 12 dígitos y EAN-13 d
 
 `registrations.organization` identifica la sociedad concreta de un registro PRO. La categoría agency=PRO se conserva; BMI/ASCAP/SGAE y otra sociedad se editan sin crear otra fila, conservando ID, estado, evidencia, notas y declaraciones originales. Fichas, dashboard y filtros muestran PRO junto al nombre. Los PRO importados sin entidad específica siguen como Sin especificar. El CRM de David declara afiliación BMI, pero no acredita el registro de cada obra: no se ha aplicado esa afiliación a sus registros automáticamente.
 
+## Integraciones externas previstas
+
+BMI y SoundExchange se integrarán primero mediante archivos oficiales, no mediante scraping ni almacenamiento de contraseñas. El módulo tendrá adaptadores separados para exportar, previsualizar, validar, conciliar e importar. Cada ejecución guardará proveedor, fecha, archivo fuente, resultado, diferencias y evidencia, pero nunca elevará automáticamente un registro declarado a evidencia revisada.
+
+- SoundExchange: generar el formato de Bulk Import desde grabaciones, ISRC, titularidad y lanzamientos; importar el CSV de Upload History y conciliarlo sin duplicar registros. Referencia oficial: [Submit Recordings y Bulk Import](https://www.soundexchange.com/2019/11/04/mastering-my-catalog-a-guide-to-submit-recordings/).
+- BMI: generar o adaptar archivos de trabajo y procesar exportaciones disponibles para el afiliado en Online Services. Referencia oficial: [BMI Online Services](https://www.bmi.com/about/bmi-services).
+- Conexión directa: requiere documentación y autorización oficial de la entidad, secretos externos al repositorio, alcance mínimo y rotación de tokens. No se considera API pública una ruta interna observada en el navegador.
+
+La conciliación prioriza identificadores exactos: ISRC para grabaciones, ISWC o identificador de obra para composiciones y UPC/EAN para lanzamientos. Las coincidencias por título o participantes se presentan para revisión humana. Antes de aplicar una importación se mostrará el resumen de altas, cambios, conflictos y filas no reconocidas; la operación debe ser reversible mediante copia previa.
+
 La unicidad es por entidad, categoría y sociedad, no solo por categoría. No se permite coexistir un PRO genérico y sociedades concretas en la misma entidad, para evitar duplicar el avance. SQLite migra atómicamente la restricción antigua conservando payload e IDs. PostgreSQL nuevo usa el índice de expresión actualizado; instalaciones previas requieren `database/migrations/002-registration-organizations.sql`. Las migraciones PostgreSQL 002/003 se ejecutaron el 14 de septiembre sobre esquema anterior sintético, conservando IDs y comprobando repetición idempotente.
 
 ## Catálogo compartido de sociedades PRO

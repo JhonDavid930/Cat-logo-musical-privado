@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 2026-09-15 · Roadmap de integraciones BMI y SoundExchange
+
+- Documentada una primera fase basada en exportación e importación de archivos oficiales, conciliación de identificadores, estados, diferencias y justificantes.
+- Queda prohibido almacenar contraseñas o automatizar portales mediante scraping; una API directa requerirá acceso oficial por token.
+- Añadidos criterios de cierre: previsualización, fixtures sin datos personales, informe de diferencias, copia previa y confirmación sustentada por evidencia.
+
 ## 2026-09-15 · Puerto dedicado y arranque permanente en Docker
 
 - Catalog Control pasa a usar el puerto local 3010 para no interferir con Chart Intelligence Platform, que ocupa el 3000.
