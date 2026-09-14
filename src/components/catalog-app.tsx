@@ -37,6 +37,7 @@ import EntityDetail from "./entity-detail";
 import ProgressMeter from "./progress-meter";
 
 type View = "overview" | "library" | "pending" | "files" | "backup";
+type KindFilter = Entity["kind"] | "all";
 export type SaveCatalog = (next: Catalog) => Promise<boolean>;
 export default function CatalogApp({
   initial,
@@ -49,7 +50,7 @@ export default function CatalogApp({
     [view, setView] = useState<View>("overview"),
     [query, setQuery] = useState(""),
     [selected, setSelected] = useState<string | null>(null),
-    [kind, setKind] = useState<Entity["kind"]>("work"),
+    [kind, setKind] = useState<KindFilter>("all"),
     [statusFilter, setStatusFilter] = useState("all"),
     [agency, setAgency] = useState("all"),
     [message, setMessage] = useState(""),
@@ -116,7 +117,7 @@ export default function CatalogApp({
     ...new Set(catalog.registrations.map(registrationLabel)),
   ].sort();
   const matches = searchEntities(catalog, query)
-    .filter((e) => e.kind === kind)
+    .filter((e) => kind === "all" || e.kind === kind)
     .filter((e) => {
       const registrations = registrationsFor(catalog, e.id).filter(
         (r) => agency === "all" || registrationLabel(r) === agency,
@@ -209,9 +210,17 @@ export default function CatalogApp({
             {localPreview ? "Vista local privada" : "Archivo privado"}
           </span>
         </header>
-        <main id="main" tabIndex={-1} onChangeCapture={(event) => {
-          if (message === "Cambios guardados." && (event.target as HTMLElement).closest("form")) setMessage("");
-        }}>
+        <main
+          id="main"
+          tabIndex={-1}
+          onChangeCapture={(event) => {
+            if (
+              message === "Cambios guardados." &&
+              (event.target as HTMLElement).closest("form")
+            )
+              setMessage("");
+          }}
+        >
           {message && (
             <div className="notice" role="status">
               <span>{message}</span>
@@ -344,10 +353,24 @@ export default function CatalogApp({
                   <section className="stats" aria-label="Resumen del catálogo">
                     <div>
                       <span className="stat-number">
-                        {String(works.length).padStart(2, "0")}
+                        {String(catalog.entities.length).padStart(2, "0")}
                       </span>
-                      <span>Obras en tu archivo</span>
-                      <small>Inventario parcial de Notion</small>
+                      <span>Fichas en todo el catálogo</span>
+                      <small>
+                        {works.length} composiciones ·{" "}
+                        {
+                          catalog.entities.filter(
+                            (entity) => entity.kind === "release",
+                          ).length
+                        }{" "}
+                        lanzamientos ·{" "}
+                        {
+                          catalog.entities.filter(
+                            (entity) => entity.kind === "video",
+                          ).length
+                        }{" "}
+                        vídeos
+                      </small>
                     </div>
                     <div>
                       <span className="stat-number">
@@ -546,14 +569,41 @@ export default function CatalogApp({
                       Mostrar
                       <select
                         value={kind}
-                        onChange={(e) =>
-                          setKind(e.target.value as Entity["kind"])
-                        }
+                        onChange={(e) => setKind(e.target.value as KindFilter)}
                       >
-                        <option value="work">Canciones</option>
-                        <option value="recording">Grabaciones</option>
-                        <option value="video">Vídeos</option>
-                        <option value="release">Lanzamientos</option>
+                        <option value="all">
+                          Todo el catálogo ({catalog.entities.length})
+                        </option>
+                        <option value="work">
+                          Composiciones ({works.length})
+                        </option>
+                        <option value="recording">
+                          Grabaciones (
+                          {
+                            catalog.entities.filter(
+                              (entity) => entity.kind === "recording",
+                            ).length
+                          }
+                          )
+                        </option>
+                        <option value="video">
+                          Vídeos (
+                          {
+                            catalog.entities.filter(
+                              (entity) => entity.kind === "video",
+                            ).length
+                          }
+                          )
+                        </option>
+                        <option value="release">
+                          Lanzamientos (
+                          {
+                            catalog.entities.filter(
+                              (entity) => entity.kind === "release",
+                            ).length
+                          }
+                          )
+                        </option>
                       </select>
                     </label>
                     <label>

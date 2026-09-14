@@ -7,6 +7,7 @@
 - Conservados como fichas separadas cuatro títulos con UPC contradictorio. Ningún dato previo ni registro legal fue sobrescrito.
 - SQLite y PostgreSQL contienen 142 entidades, 137 relaciones y los 107 registros legales originales. Copias previas y fuentes permanecen excluidas de Git.
 - Añadidas dos pruebas de importación; la suite consolidada pasa 30 pruebas y TypeScript.
+- La biblioteca abre ahora en «Todo el catálogo» y muestra recuentos por tipo. El dashboard diferencia las 142 fichas totales de las 14 composiciones documentadas para evitar que el usuario interprete ese último número como el catálogo completo.
 
 ## 2026-09-15 · Auditoría del catálogo público de Spotify
 

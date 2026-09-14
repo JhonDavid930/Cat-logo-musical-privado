@@ -22,6 +22,8 @@ El mismo día se auditó e importó el [perfil oficial de Spotify](https://open.
 
 La importación no convierte datos de Spotify en composición, autoría, afiliación o registro legal. Cuatro títulos tenían un UPC distinto al ya guardado —El inicio del fin, LA VIDA ES UNA, Mujer y No Te Quiero Ver— y se conservaron como lanzamientos separados para revisión. I Get the Cash se clasificó como EP por sus seis pistas. Antes de aplicar los cambios se guardaron copias recuperables independientes de SQLite y PostgreSQL en `private/backups/`.
 
+La biblioteca inicia en «Todo el catálogo (142)» y permite filtrar Composiciones (14), Grabaciones (93), Vídeos (5) y Lanzamientos (30). El dashboard muestra las fichas totales y etiqueta las composiciones por separado; el número 14 ya no se presenta como si fuera el inventario completo.
+
 ## Decisiones que hay que conservar
 
 | Decisión | Razón y consecuencia |
