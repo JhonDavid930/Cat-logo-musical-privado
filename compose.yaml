@@ -1,0 +1,69 @@
+name: david-appleton
+services:
+  db:
+    image: postgres:18-bookworm
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: catalog
+      POSTGRES_USER: catalog_admin
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_admin_password
+    secrets: [db_admin_password, db_app_password]
+    volumes:
+      - catalog_database:/var/lib/postgresql
+      - ./docker/init-db.sh:/docker-entrypoint-initdb.d/10-catalog.sh:ro
+      - ./database/schema.sql:/opt/catalog/schema.sql:ro
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U catalog_admin -d catalog"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks: [database]
+  app:
+    build: .
+    restart: unless-stopped
+    init: true
+    depends_on:
+      db: { condition: service_healthy }
+    environment:
+      CATALOG_STORAGE: postgres
+      CATALOG_FILES_DIR: /data/files
+      PGHOST: db
+      PGDATABASE: catalog
+      PGUSER: catalog_app
+      PGPASSWORD_FILE: /run/secrets/db_app_password
+      CATALOG_PASSWORD_HASH_FILE: /run/secrets/catalog_password_hash
+      CATALOG_SESSION_SECRET_FILE: /run/secrets/session_secret
+      CATALOG_APP_URL: ${CATALOG_APP_URL:-https://localhost}
+    secrets: [db_app_password, catalog_password_hash, session_secret]
+    volumes:
+      - catalog_files:/data/files
+    ports:
+      - "127.0.0.1:3000:3000"
+    read_only: true
+    tmpfs: [/tmp]
+    security_opt: [no-new-privileges:true]
+    cap_drop: [ALL]
+    healthcheck:
+      test:
+        [
+          CMD,
+          node,
+          -e,
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 20s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    networks: [database, frontend]
+networks:
+  database: { internal: true }
+  frontend: {}
+volumes:
+  catalog_database: {}
+  catalog_files: {}
+secrets:
+  db_admin_password: { file: ./private/secrets/db_admin_password }
+  db_app_password: { file: ./private/secrets/db_app_password }
+  catalog_password_hash: { file: ./private/secrets/catalog_password_hash }
+  session_secret: { file: ./private/secrets/session_secret }

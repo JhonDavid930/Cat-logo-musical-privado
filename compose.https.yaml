@@ -1,0 +1,17 @@
+services:
+  proxy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      CATALOG_DOMAIN: ${CATALOG_DOMAIN:?Define el dominio antes de activar HTTPS}
+    ports: ['80:80', '443:443']
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - tls_data:/data
+      - tls_config:/config
+    depends_on:
+      app: {condition: service_healthy}
+    networks: [frontend]
+volumes:
+  tls_data: {}
+  tls_config: {}

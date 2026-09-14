@@ -1,0 +1,81 @@
+# Validación y límites de la evidencia
+
+## Actualización: 2026-09-14
+
+Docker Engine 29.5.3 y Compose 5.1.4 operativos. Ejecutado `node scripts/test-docker.mjs` con resultado correcto, proyecto aislado `catalog-check-1a77ef6343`. El script construye la imagen del Dockerfile y utiliza Compose base con override de secretos temporales y único puerto loopback dinámico; no monta datos reales. Verificado:
+
+- Build real Linux Docker y postbuild sin datos privados; PostgreSQL y app saludables.
+- Login, cookie Secure/HttpOnly, acceso anónimo rechazado, dos canciones/PRO normalizado, revisión obsoleta 409 y Origin ajeno 403.
+- Migraciones 002/003 desde restricción anterior, aplicadas dos veces; IDs conservados, varias sociedades y persistencia de opciones sin registros.
+- Subida/lectura/descarga TXT autenticada, usuario node, raíz read-only y volumen de archivos; datos y SHA-256 intactos tras reiniciar app/db.
+- Exportación/restauración ZIP real con PostgreSQL, metadatos y binario recuperados.
+- pg_dump/pg_restore a restore_check; originales copiados a otro volumen sintético; app recreada usando la base y el volumen recuperados y descarga con el mismo SHA-256.
+- Comparación de hashes antes/después: catálogo SQLite, sus archivos auxiliares presentes y .env.local sin cambios.
+
+28 pruebas unitarias/SQLite y TypeScript repetidas y superadas. No se repitieron las pruebas de navegador en esta sesión. Informe y backups sintéticos: `C:\Users\apple\AppData\Local\Temp\catalog-docker-check-LEvyq6`; el informe report.json no contiene secretos, pero el directorio también contiene credenciales desechables y no debe publicarse entero. Los contenedores de ese proyecto quedaron detenidos; volúmenes conservados, sin prune ni borrado.
+
+Este resultado cierra los pendientes de ejecución Docker/PostgreSQL, migraciones, permisos básicos y recuperación local indicados en el registro histórico siguiente. No valida Synology, HTTPS externo/proxy, cargas máximas, corte eléctrico, todos los formatos Office/códecs dentro de Docker ni ARM64. El ensayo emplea HTTP exclusivamente sobre loopback para probar el servidor; Origin y cookie se comprueban, pero no se ensaya un certificado TLS.
+
+## Registro histórico hasta el 12 de septiembre
+
+Revisión documental: 2026-09-12. Se contrastaron fuentes del proyecto sin ejecutar pruebas funcionales nuevas ni leer el catálogo privado. Los resultados siguientes proceden de ejecuciones registradas el 2026-09-10; no certifican el estado actual del equipo, del registro npm o de Docker.
+
+## Último estado comprobado
+
+| Comprobación | Evidencia registrada el 10 de septiembre | Límite |
+|---|---|---|
+| Unitarias e integración SQLite | 28 pruebas superadas al cerrar sociedades compartidas | Sin PostgreSQL real |
+| TypeScript y Build standalone | Correctos tras la última corrección | No es Build de imagen Docker |
+| Empaquetado | Postbuild sin datos privados ni archivos de entorno | No acredita permisos de volúmenes |
+| Suite aislada de navegador | Cuatro flujos superados en ampliación UPC/PRO; después se repitió el flujo de lanzamientos/PRO con sociedades compartidas y pasó | Los otros tres flujos no se repitieron tras esa última corrección |
+| Autenticación de producción aislada | Login correcto, anónimo/contraseña incorrecta/sesión manipulada rechazados; cookie protegida | Ensayo anterior a última corrección de PRO |
+| a11y y responsive | axe AA sin infracciones detectadas en pantallas ensayadas; 375/768/1024/1440, temas claro/oscuro; revisión visual de capturas | No equivale a auditoría manual con lector de pantalla ni iPhone físico |
+| Barras de progreso | Regresión de valores, desconocidos y reduced-motion superada | Basada en registros disponibles, no inventario estimado |
+| npm audit producción | Cero vulnerabilidades reportadas en esa ejecución | Resultado histórico, no garantía futura |
+| Compose base/HTTPS | Configuración parseada correctamente | Ningún contenedor arrancado con ello |
+
+## Qué cubren los escenarios
+
+- Dominio: estados/aplicabilidad/evidencia, porcentajes, integridad de relaciones, búsqueda, revisión concurrente y JSON acotado.
+- SQLite: persistencia y reapertura, migración de restricción antigua, sociedades compartidas deduplicadas y conservadas aunque desaparezcan sus registros.
+- Archivos: subidas múltiples/notas, manifests y SHA-256, límites/rangos, ZIP de ida/vuelta y binarios, texto escapado, DOCX/XLSX, rechazo de macros.
+- Navegador aislado: selector/drag and drop, descarga autenticada, reproducción WAV/WebM, lector PDF/Word/Excel, recuperación ZIP, géneros y roles profesionales.
+- Lanzamientos: álbum compartido entre dos canciones, UPC con cero inicial, Single adicional, códigos inválidos rechazados.
+- PRO final: sociedad nueva reutilizada en segunda canción y tras recarga; BMI intacto al intentar Otra vacía o solo espacios; aviso de guardado anterior retirado al editar.
+
+Las pruebas usan fixtures temporales cuando se indica aislamiento. La suite antigua tests/e2e escribe sobre el servidor de destino y restaura datos iniciales: no ejecutarla sobre un catálogo de uso real. El runner aislado puede dejar directorios sintéticos en el temporal del sistema; no afirmar que todos los temporales se eliminan automáticamente.
+
+## Cómo reproducir sin usar datos reales
+
+Desde la raíz, con Node 24 y dependencias instaladas:
+
+1. Ejecutar npm test y npm run typecheck.
+2. Ejecutar npm run build; incluye scripts/check-build.mjs.
+3. Con Chrome instalado y el puerto 3002 libre, ejecutar npx playwright test --config playwright.files.config.ts. Arranca su propio servidor y SQLite temporal. CHROME_PATH permite cambiar el ejecutable.
+4. Para repetir solo la última corrección: npx playwright test --config playwright.files.config.ts tests/attachments/releases.spec.ts.
+5. La prueba específica de sesión es node scripts/test-production-auth.mjs, con puerto 3001 libre y Build previo.
+
+npm run test:e2e usa TEST_BASE_URL o http://127.0.0.1:3000. Solo emplearlo en una instalación DEV desechable, sin ediciones simultáneas. No ejecutado durante esta revisión documental.
+
+## Pendiente de validar o realizar
+
+- Docker Build/arranque real, conexión PostgreSQL, migraciones 002/003 sobre base previa, backup y recuperación PostgreSQL.
+- Volumen de archivos, permisos del usuario node, reinicio de servicios y consistencia conjunta de base/originales en Docker.
+- NAS/VPS, HTTPS externo, proxy, consumo de RAM, reinicio y recuperación ante corte eléctrico. No se transfirió ni desplegó el proyecto en NAS.
+- Tamaños reales de 512 MiB por archivo u 8 GiB por ZIP, carga y todos los códecs. Se ensayaron límites lógicos, WAV PCM y WebM generado por Chrome.
+- Lectores: PDF depende del navegador; Word muestra texto sin maquetación; Excel muestra valores guardados dentro de límites y no calcula fórmulas.
+- ARM64, revisión manual completa con lector de pantalla e iPhone físico.
+- Cobertura total del catálogo, inventario Drive y verificación externa de certificados/estados.
+
+El almacenamiento binario y la reproducción sí están implementados y ensayados con datos sintéticos; lo pendiente es incorporar y verificar los archivos reales del inventario.
+
+## Evidencia visual e infraestructura histórica
+
+Las capturas privadas de las sesiones anteriores están bajo private/ y excluidas del empaquetado. Ejemplos: pro-organizations-mobile.png, upc-mobile.png y pdf-preview-check.png. No publicarlas automáticamente: pueden contener datos privados.
+
+La incidencia de Docker del 10 de septiembre está en [DOCKER_LOCAL_ISSUE.md](DOCKER_LOCAL_ISSUE.md). Su estado no se reconsultó el 12 de septiembre. Revisar entonces docker info antes de atribuir un bloqueo nuevo a la misma causa.
+
+## Revisión documental del 12 de septiembre
+
+Se verificaron nombres/rutas contra package.json, configuraciones Playwright/Compose, Dockerfile, scripts, schema/migraciones, contrato, almacenamiento y Route Handlers. Se corrigieron afirmaciones antiguas sobre archivos solo enlazados, migración 001 inexistente, resultados acumulados y configuración de arranque. Se comprobaron enlaces locales de documentación. No se ejecutaron Build/tests, servicios, importaciones ni operaciones sobre datos o infraestructura en esta revisión.
+

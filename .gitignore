@@ -1,0 +1,12 @@
+node_modules/
+.next/
+.env*
+!.env.example
+private/
+.tools/
+test-results/
+playwright-report/
+*.tsbuildinfo
+cover-art/
+invoices/
+music-analysis/

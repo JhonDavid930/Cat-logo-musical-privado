@@ -1,0 +1,16 @@
+CREATE TABLE IF NOT EXISTS metadata (id integer PRIMARY KEY CHECK(id=1), revision integer NOT NULL DEFAULT 0, imported_at text NOT NULL DEFAULT '', source_summary text NOT NULL DEFAULT 'Catálogo vacío. Restaura tu copia JSON para importar tus datos.');
+INSERT INTO metadata(id) VALUES(1) ON CONFLICT DO NOTHING;
+CREATE TABLE IF NOT EXISTS entities (id uuid PRIMARY KEY, kind text NOT NULL CHECK(kind IN ('work','recording','video','release')), title text NOT NULL CHECK(length(title)>0), code text NOT NULL DEFAULT '', payload jsonb NOT NULL);
+CREATE INDEX IF NOT EXISTS entity_kind ON entities(kind);
+CREATE INDEX IF NOT EXISTS entity_code ON entities(code);
+CREATE TABLE IF NOT EXISTS links (id uuid PRIMARY KEY, from_id uuid NOT NULL REFERENCES entities(id), to_id uuid NOT NULL REFERENCES entities(id), relation text NOT NULL CHECK(relation IN ('recording_work','release_recording','release_work','video_recording')), UNIQUE(from_id,to_id,relation));
+CREATE TABLE IF NOT EXISTS registrations (id uuid PRIMARY KEY, entity_id uuid NOT NULL REFERENCES entities(id), agency text NOT NULL, payload jsonb NOT NULL);
+CREATE UNIQUE INDEX IF NOT EXISTS registration_entity_organization ON registrations(entity_id,lower(agency),lower(coalesce(payload->>'organization','')));
+CREATE TABLE IF NOT EXISTS credits (id uuid PRIMARY KEY, entity_id uuid NOT NULL REFERENCES entities(id), payload jsonb NOT NULL);
+CREATE TABLE IF NOT EXISTS documents (id uuid PRIMARY KEY, entity_id uuid NOT NULL REFERENCES entities(id), payload jsonb NOT NULL);
+CREATE TABLE IF NOT EXISTS audit_log (id bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY, created_at timestamptz NOT NULL DEFAULT now(), revision integer NOT NULL, entity_count integer NOT NULL);
+CREATE INDEX IF NOT EXISTS registration_entity ON registrations(entity_id);
+CREATE INDEX IF NOT EXISTS credit_entity ON credits(entity_id);
+CREATE INDEX IF NOT EXISTS document_entity ON documents(entity_id);
+CREATE TABLE IF NOT EXISTS pro_organizations (key text PRIMARY KEY, name text NOT NULL);
+INSERT INTO pro_organizations(key,name) VALUES('bmi','BMI'),('ascap','ASCAP'),('sgae','SGAE') ON CONFLICT DO NOTHING;

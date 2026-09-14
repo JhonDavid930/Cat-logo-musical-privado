@@ -1,0 +1,10 @@
+private
+.tools
+cover-art
+invoices
+music-analysis
+test-results
+tests
+docs
+design-system
+.env.local

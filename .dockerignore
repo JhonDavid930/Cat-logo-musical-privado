@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.env*
+private
+.tools
+cover-art
+invoices
+music-analysis
+tests
+test-results
+playwright-report
+*.tsbuildinfo
