@@ -10,7 +10,9 @@
     "test": "tsx --test tests/*.test.ts",
     "typecheck": "tsc --noEmit",
     "import:notion": "tsx scripts/import-notion.ts",
+    "import:bmi": "tsx scripts/import-bmi.ts",
     "import:spotify": "tsx scripts/import-spotify.ts",
+    "import:soundexchange": "tsx scripts/import-soundexchange.ts",
     "test:e2e": "playwright test",
     "format": "prettier --write src scripts tests *.ts *.json *.yaml",
     "postbuild": "node scripts/check-build.mjs"

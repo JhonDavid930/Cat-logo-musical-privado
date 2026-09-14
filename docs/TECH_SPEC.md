@@ -44,6 +44,12 @@ erDiagram
 
 La operación es repetible: usa UUID deterministas y evita duplicar fichas o relaciones. Añade `sourceRecords` y `sourceUrls`, marca como publicado lo que aparece en el perfil y relaciona lanzamiento con grabación. Solo enlaza una grabación a una composición existente cuando la coincidencia de título o versión es única; nunca crea composiciones, autorías, sociedades ni estados legales desde Spotify. `npm run import:spotify` presenta una vista previa y `npm run import:spotify -- --apply` escribe en SQLite con control de revisión.
 
+## Importaciones de BMI y SoundExchange
+
+`src/lib/bmi-import.ts` valida el encabezado oficial, agrupa las filas por BMI Title Number y concilia primero por Title Number previamente importado, después por ISWC existente y por último por un título único cuyo código esté vacío. Conserva cada fila de participante, IP Name Number, afiliación, porcentaje declarado, origen, fecha y estado Songview en `sourceRecords`. `Reconciled` se traduce a registrado y `Pending Society Review` a en trámite; ninguno se marca como evidencia revisada sin justificante. Los participantes se añaden con porcentaje nulo porque el CSV usa una escala que puede totalizar 200.
+
+`src/lib/soundexchange-import.ts` identifica cada fila por SXID y concilia grabaciones por ISRC. Cuando falta ISRC solo reutiliza una grabación si el título tiene una coincidencia única; de lo contrario crea una ficha separada por SXID. Conserva porcentaje efectivo, Hold, registrante, Payee ID y tipo de asociación en la fuente privada. El propietario confirmó que David Appleton es su nombre artístico como intérprete y Jhon David Valdez Calier su nombre legal: `Association Type: Artist` crea un crédito profesional `Intérprete principal (SoundExchange)` bajo el nombre artístico, con porcentaje nulo y nunca una autoría. Ambos importadores usan UUID deterministas, validación completa y segunda ejecución sin duplicados.
+
 ## Cálculos
 
 El contrato JSON tiene `version: 1`, `revision`, `importedAt`, `sourceSummary`, `entities`, `links`, `registrations`, `credits`, `documents` y `proOrganizations`. Una escritura sustituye las colecciones en transacción y aumenta la revisión; `proOrganizations` se une a la lista existente. SQLite usa transacción inmediata; PostgreSQL bloquea la fila de revisión con `FOR UPDATE`. El audit log registra guardados, pero no es un historial recuperable de todas las versiones.
@@ -129,7 +135,7 @@ La entrada nueva o modificada de códigos admite UPC-A de 12 dígitos y EAN-13 d
 
 ## Integraciones externas previstas
 
-BMI y SoundExchange se integrarán primero mediante archivos oficiales, no mediante scraping ni almacenamiento de contraseñas. El módulo tendrá adaptadores separados para exportar, previsualizar, validar, conciliar e importar. Cada ejecución guardará proveedor, fecha, archivo fuente, resultado, diferencias y evidencia, pero nunca elevará automáticamente un registro declarado a evidencia revisada.
+BMI y SoundExchange se integran mediante archivos oficiales, sin scraping ni almacenamiento de contraseñas. Los adaptadores de importación, previsualización, validación y conciliación ya existen. Falta generar archivos de salida y procesar historiales de carga cuando el propietario entregue sus formatos. Ninguna importación eleva automáticamente un registro declarado a evidencia revisada.
 
 - SoundExchange: generar el formato de Bulk Import desde grabaciones, ISRC, titularidad y lanzamientos; importar el CSV de Upload History y conciliarlo sin duplicar registros. Referencia oficial: [Submit Recordings y Bulk Import](https://www.soundexchange.com/2019/11/04/mastering-my-catalog-a-guide-to-submit-recordings/).
 - BMI: generar o adaptar archivos de trabajo y procesar exportaciones disponibles para el afiliado en Online Services. Referencia oficial: [BMI Online Services](https://www.bmi.com/about/bmi-services).

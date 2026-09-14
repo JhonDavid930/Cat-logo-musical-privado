@@ -2,6 +2,12 @@
 
 ## Actualización: 2026-09-15
 
+Importados los CSV privados de BMI y SoundExchange en SQLite y PostgreSQL después de crear copias ZIP independientes antes de cada operación. Resultado final: 213 entidades —67 composiciones, 111 grabaciones, cinco vídeos y 30 lanzamientos—, 213 relaciones, 210 registros y 286 créditos. Las copias finales están en `private/backups/final-bmi-soundexchange-*-2026-09-15.zip`.
+
+BMI: 67 Title Numbers, 154 participantes, 54 estados Reconciled y 13 Pending Society Review. Se probaron encabezado/campos CSV, conciliación, estados, participantes con porcentaje nulo, ISWC repetido y segunda ejecución. SoundExchange: 65 SXID, 17 sin ISRC, 47 grabaciones conciliadas y 18 nuevas; 65 filas declaran Hold No. Se probaron conciliación por ISRC/SXID, filas sin ISRC, reparación de caracteres dañados, crédito profesional de intérprete y segunda ejecución. El propietario confirmó que David Appleton es su nombre artístico como intérprete, Jhon David Valdez Calier su nombre legal y que los títulos de la exportación corresponden a su catálogo.
+
+La suite consolidada contiene 36 pruebas superadas y TypeScript no reporta errores. Los archivos fuente y sus identificadores personales permanecen excluidos de Git.
+
 Importación de Spotify aplicada después de crear copias ZIP completas separadas para SQLite y PostgreSQL. Resultado en ambos almacenamientos: 142 entidades —14 composiciones, 93 grabaciones, cinco vídeos y 30 lanzamientos—, 137 relaciones y 107 registros legales. Se añadieron 76 masters y 20 lanzamientos; 13 masters y dos lanzamientos existentes recibieron fuentes de Spotify. Cuatro UPC contradictorios se conservaron en fichas separadas y no se sobrescribió ninguno.
 
 El importador se probó con dos masters de igual título y distinto ISRC, conflicto de UPC, enlace único a composición y segunda ejecución sin duplicados. La suite consolidada contiene 30 pruebas superadas y TypeScript no reporta errores. La comprobación no demuestra titularidad, autoría ni exactitud contractual de los metadatos públicos; esas conclusiones requieren documentación del distribuidor o de la sociedad correspondiente.

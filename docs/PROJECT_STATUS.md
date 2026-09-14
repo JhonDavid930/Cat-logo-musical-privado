@@ -6,7 +6,7 @@ Ruta real: `C:\Users\apple\Documents\DavidAppleton`. El nombre de carpeta desead
 
 ## Qué es y para quién
 
-Archivo privado de un único propietario, David Appleton, para ordenar obras, versiones, lanzamientos, participaciones profesionales y registros musicales. Distingue lo declarado de lo respaldado por evidencia revisada. No es un distribuidor ni un servicio de consulta automática a sociedades. La interfaz en español tiene dirección editorial oscura/clara aprobada; conservarla al continuar.
+Archivo privado de un único propietario: Jhon David Valdez Calier, cuyo nombre artístico como intérprete es David Appleton. Sirve para ordenar obras, versiones, lanzamientos, participaciones profesionales y registros musicales. Distingue lo declarado de lo respaldado por evidencia revisada. No es un distribuidor ni un servicio de consulta automática a sociedades. La interfaz en español tiene dirección editorial oscura/clara aprobada; conservarla al continuar.
 
 ## Dónde nos quedamos
 
@@ -16,13 +16,15 @@ El 12 de septiembre se revisó exclusivamente documentación. No se añadieron f
 
 El 14 de septiembre Docker volvió a responder. Se añadió `scripts/test-docker.mjs` y pasó la validación de Build, app autenticada, PostgreSQL, migraciones 002/003 desde esquema anterior, persistencia tras reinicio, ZIP y recuperación de base/originales en destinos separados. Proyecto de prueba `catalog-check-1a77ef6343`, detenido al terminar; volúmenes sintéticos conservados. No se desplegó en el NAS.
 
-El 15 de septiembre se creó el grupo local permanente `catalog-control`. Sus contenedores `catalog-control-app-1` y `catalog-control-db-1` están saludables, la aplicación responde en `http://127.0.0.1:3010` y PostgreSQL contiene el catálogo conciliado actual con 142 entidades y 107 registros. El puerto 3000 pertenece a Chart Intelligence Platform y no se modificó. La contraseña local inicial se conserva fuera de Git en `private/LOGIN_PASSWORD_LOCAL.txt`.
+El 15 de septiembre se creó el grupo local permanente `catalog-control`. Sus contenedores `catalog-control-app-1` y `catalog-control-db-1` están saludables, la aplicación responde en `http://127.0.0.1:3010` y PostgreSQL contiene el catálogo conciliado actual con 213 entidades y 210 registros. El puerto 3000 pertenece a Chart Intelligence Platform y no se modificó. La contraseña local inicial se conserva fuera de Git en `private/LOGIN_PASSWORD_LOCAL.txt`.
 
 El mismo día se auditó e importó el [perfil oficial de Spotify](https://open.spotify.com/artist/7KagVdHIz2wTVYXlQqb6jY) mediante una conexión API ya existente en el equipo, sin copiar sus credenciales. En mercado ES se conciliaron 22 lanzamientos y 89 Track IDs por Spotify ID, ISRC y UPC. Se añadieron 76 grabaciones y 20 lanzamientos, se enriquecieron 13 grabaciones y dos lanzamientos existentes, y se crearon 88 relaciones. El catálogo resultante contiene 142 entidades: 14 composiciones, 93 grabaciones, cinco vídeos y 30 lanzamientos. SQLite quedó en revisión 30 y PostgreSQL en revisión 2, con 107 registros legales intactos. Los informes y la extracción permanecen bajo `private/`, excluidos de Git.
 
 La importación no convierte datos de Spotify en composición, autoría, afiliación o registro legal. Cuatro títulos tenían un UPC distinto al ya guardado —El inicio del fin, LA VIDA ES UNA, Mujer y No Te Quiero Ver— y se conservaron como lanzamientos separados para revisión. I Get the Cash se clasificó como EP por sus seis pistas. Antes de aplicar los cambios se guardaron copias recuperables independientes de SQLite y PostgreSQL en `private/backups/`.
 
-La biblioteca inicia en «Todo el catálogo (142)» y permite filtrar Composiciones (14), Grabaciones (93), Vídeos (5) y Lanzamientos (30). El dashboard muestra las fichas totales y etiqueta las composiciones por separado; el número 14 ya no se presenta como si fuera el inventario completo.
+Después se importaron los CSV entregados por el propietario. BMI contiene 67 Title Numbers y 154 filas de participantes: se añadieron 53 composiciones, se enriquecieron 14, se añadieron 53 registros BMI y se actualizaron 14. El estado final es 54 BMI registrados y 13 en trámite. Los porcentajes originales permanecen en `sourceRecords`; no se copiaron a autorías porque varias obras totalizan 200 en el formato de BMI. El ISWC `T9324330429` aparece en los Title Numbers de LIKE YOU y LIIKE YOU; ambas fichas se conservan separadas y señaladas.
+
+SoundExchange contiene 65 SXID: se añadieron 18 grabaciones, se enriquecieron 47, se añadieron 50 registros y se actualizaron 15. Las 17 filas sin ISRC se conservan por SXID. El propietario confirmó que David Appleton es su nombre artístico como intérprete y Jhon David Valdez Calier su nombre legal; cada asociación Artist se refleja como crédito profesional bajo el nombre artístico, nunca como autoría. Los tres estudios para piano de la exportación se conservan como grabaciones propias. La biblioteca inicia en «Todo el catálogo (213)» y permite filtrar Composiciones (67), Grabaciones (111), Vídeos (5) y Lanzamientos (30).
 
 ## Decisiones que hay que conservar
 
@@ -46,7 +48,7 @@ La biblioteca inicia en «Todo el catálogo (142)» y permite filtrar Composicio
 | Archivos privados y ZIP | Implementados y probados con archivos sintéticos; no todos los códecs ni tamaños máximos reales. |
 | UPC/EAN, tipos y lanzamientos compartidos | Implementados y probados localmente; checksum no acredita asignación. |
 | Sociedades PRO compartidas | Pruebas de dos canciones, recarga, SQLite reabierta, deduplicación y copias. |
-| PostgreSQL y migraciones | Validados localmente; la instalación permanente contiene 142 entidades y 107 registros tras la conciliación de Spotify. |
+| PostgreSQL y migraciones | Validados localmente; la instalación permanente contiene 213 entidades, 213 relaciones, 210 registros y 286 créditos tras conciliar Spotify, BMI y SoundExchange. |
 | Docker y volúmenes | Grupo `catalog-control` activo y saludable en el puerto 3010; Build/arranque, escritura, reinicio y recuperación superados. |
 | NAS, HTTPS externo y acceso remoto | No desplegados ni configurados por este trabajo. |
 
@@ -80,7 +82,7 @@ NAS identificado: Synology DS225+, 2 GB RAM, Container Manager instalado. Solo i
 
 1. **Revisión del propietario y copia recuperable.** Criterio: confirmar agrupaciones/versiones y recuperar ZIP en catálogo de prueba conservando relaciones y originales; no marcar evidencia sin revisarla.
 2. **Revisar con el propietario la conciliación de Spotify.** Comprobar las nuevas grabaciones y lanzamientos, sobre todo los cuatro conflictos de UPC y las versiones con títulos parecidos. Cada master conserva su ISRC y cada lanzamiento su Spotify Album ID/UPC; no fusionarlos solo por nombre. Criterio: cada discrepancia queda confirmada, corregida o descartada con motivo y documento del distribuidor cuando exista.
-3. **Crear el módulo de integraciones para BMI y SoundExchange.** Primera fase sin credenciales ni automatización de portales: exportar archivos oficiales, importar CSV/Excel de respuesta o historial, conciliar por ISWC/ISRC/UPC/título/titulares y registrar fecha, estado, diferencias y justificantes. SoundExchange debe soportar su Bulk Import y el CSV de Upload History; BMI debe trabajar con archivos descargados o aceptados por Online Services. Una sincronización directa solo se habilitará si la entidad concede una API o data feed oficial con autenticación por token. Criterio: ida y vuelta probada con fixtures sin datos personales, previsualización antes de aplicar cambios, informe de diferencias y ningún estado marcado como confirmado sin evidencia.
+3. **Revisar las excepciones de BMI y SoundExchange.** Confirmar el ISWC compartido de LIKE YOU/LIIKE YOU y completar, cuando exista, el ISRC de las 17 filas SoundExchange que solo tienen SXID. La identidad artística David Appleton ya fue confirmada por el propietario. Criterio: cada excepción queda confirmada o corregida con motivo; ningún porcentaje se reinterpreta sin documentación del proveedor.
 4. **Cerrar límites restantes de infraestructura antes del traslado.** El ensayo Docker/PostgreSQL local ya pasó. Pendiente medir carga/tamaños grandes y validar el acceso HTTPS elegido. La prueba no cubre todos los formatos/códecs ni cortes eléctricos ni el hardware del NAS.
 5. **Preparar traslado revisable y obtener aprobación.** Criterio: imagen linux/amd64, secretos externos, backup recuperable, consumo medido y plan HTTPS/red. Solo después de aprobación trasladar al NAS y comprobar allí salud/recuperación.
 

@@ -1,6 +1,6 @@
 # David Appleton · Archivo privado
 
-**Para retomar el proyecto, empieza por [Estado y próximos pasos](docs/PROJECT_STATUS.md).** Estado actualizado: 14 de septiembre de 2026. La carpeta real sigue siendo DavidAppleton; el renombrado a CatalogControl está pendiente.
+**Para retomar el proyecto, empieza por [Estado y próximos pasos](docs/PROJECT_STATUS.md).** Estado actualizado: 15 de septiembre de 2026. La carpeta real sigue siendo DavidAppleton; el renombrado a CatalogControl está pendiente.
 
 Primera versión funcional del catálogo personal: canciones, grabaciones, vídeos, lanzamientos, letras, autores, registros y documentos. Interfaz editorial en español, móvil y escritorio, con modos oscuro y claro. Identidad visual provisional propia de David Appleton.
 
@@ -19,6 +19,8 @@ npm run dev
 Abre http://127.0.0.1:3010. El puerto 3010 identifica Catalog Control y evita interferir con otros proyectos de este ordenador. El modo DEV está limitado a este ordenador. Usa SQLite local en `private/catalog.sqlite`; Docker usa PostgreSQL propio. Si existe `private/catalog.json`, la base local nueva lo importa una sola vez. No hay dependencia de Supabase alojado ni pagos integrados.
 
 La conciliación de una extracción privada de Spotify se previsualiza con `npm run import:spotify` y se aplica a SQLite con `npm run import:spotify -- --apply`. El archivo de origen permanece en `private/` y no forma parte del repositorio. Crea una copia ZIP completa antes de aplicar otra extracción; el importador no escribe directamente en PostgreSQL ni acredita autoría o registros legales.
+
+Los catálogos oficiales en CSV se previsualizan con `npm run import:bmi` y `npm run import:soundexchange`; añade `-- --apply` para escribir en SQLite. Ambos importadores conservan las filas originales como procedencia, usan identificadores oficiales y pueden ejecutarse de nuevo sin duplicar fichas. Los CSV, Payee IDs, IP Name Numbers y copias completas permanecen en `private/`.
 
 ## Lo que puedes hacer
 

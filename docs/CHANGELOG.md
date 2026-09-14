@@ -1,5 +1,14 @@
 # Historial de cambios
 
+## 2026-09-15 · Catálogos BMI y SoundExchange incorporados
+
+- Añadidos importadores CSV repetibles para BMI Title Number/ISWC y SoundExchange SXID/ISRC, con validación de columnas y conservación de las filas originales.
+- BMI aporta 67 composiciones y 154 participantes: 53 obras nuevas, 14 enriquecidas, 54 registros completados y 13 en trámite.
+- SoundExchange aporta 65 SXID: 18 grabaciones nuevas, 47 enriquecidas y 65 registros conciliados; 17 filas sin ISRC se conservan por SXID.
+- Los porcentajes BMI permanecen en la fuente sin reinterpretarse. LIKE YOU/LIIKE YOU comparten ISWC y se conservan separados.
+- El propietario confirmó que David Appleton es su nombre artístico como intérprete y Jhon David Valdez Calier su nombre legal; se retiró la alerta provisional de homónimo y cada asociación Artist se registra bajo el nombre artístico como crédito profesional sin porcentaje de autoría.
+- Catálogo final en SQLite y PostgreSQL: 213 entidades, 213 relaciones, 210 registros y 286 créditos. Suite consolidada: 36 pruebas.
+
 ## 2026-09-15 · Catálogo de Spotify incorporado
 
 - Añadido un importador repetible que concilia masters por ISRC/Spotify Track ID y lanzamientos por Spotify Album ID/UPC.
