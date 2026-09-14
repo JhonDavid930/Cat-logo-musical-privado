@@ -1,4 +1,4 @@
-name: david-appleton
+name: catalog-control
 services:
   db:
     image: postgres:18-bookworm
@@ -19,6 +19,7 @@ services:
       retries: 10
     networks: [database]
   app:
+    image: catalog-control-app:0.1.0
     build: .
     restart: unless-stopped
     init: true
@@ -33,12 +34,12 @@ services:
       PGPASSWORD_FILE: /run/secrets/db_app_password
       CATALOG_PASSWORD_HASH_FILE: /run/secrets/catalog_password_hash
       CATALOG_SESSION_SECRET_FILE: /run/secrets/session_secret
-      CATALOG_APP_URL: ${CATALOG_APP_URL:-https://localhost}
+      CATALOG_APP_URL: ${CATALOG_APP_URL:-http://127.0.0.1:3010}
     secrets: [db_app_password, catalog_password_hash, session_secret]
     volumes:
       - catalog_files:/data/files
     ports:
-      - "127.0.0.1:3000:3000"
+      - "127.0.0.1:${CATALOG_PORT:-3010}:3000"
     read_only: true
     tmpfs: [/tmp]
     security_opt: [no-new-privileges:true]

@@ -74,7 +74,7 @@ test("autores, archivos y asociación manual persisten; restaura copia desde la 
     expect(restored.links).toEqual(original.links);
   } finally {
     const endpoint =
-      (process.env.TEST_BASE_URL || "http://127.0.0.1:3000") + "/api/catalog";
+      (process.env.TEST_BASE_URL || "http://127.0.0.1:3010") + "/api/catalog";
     const latest = (await (await fetch(endpoint)).json()) as Catalog;
     const restored = await fetch(endpoint, {
       method: "PUT",

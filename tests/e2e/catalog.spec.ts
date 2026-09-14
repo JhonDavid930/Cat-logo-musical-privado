@@ -106,7 +106,7 @@ test("edición persistente, evidencia explícita y exportación recuperable", as
       await request.get("/api/catalog")
     ).json()) as Catalog;
     const response = await request.put("/api/catalog", {
-      headers: { origin: "http://127.0.0.1:3000" },
+      headers: { origin: "http://127.0.0.1:3010" },
       data: { ...original, revision: latest.revision },
     });
     expect(response.ok()).toBe(true);
@@ -128,7 +128,7 @@ test("rechaza guardado desde otro origen y revisiones antiguas", async ({
   expect(
     (
       await request.put("/api/catalog", {
-        headers: { origin: "http://127.0.0.1:3000" },
+        headers: { origin: "http://127.0.0.1:3010" },
         data: { ...original, revision: Math.max(0, original.revision - 1) },
       })
     ).status(),

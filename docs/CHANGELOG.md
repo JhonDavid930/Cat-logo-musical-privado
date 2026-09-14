@@ -1,5 +1,14 @@
 # Historial de cambios
 
+## 2026-09-15 · Puerto dedicado y arranque permanente en Docker
+
+- Catalog Control pasa a usar el puerto local 3010 para no interferir con Chart Intelligence Platform, que ocupa el 3000.
+- Compose permite cambiar el puerto mediante `CATALOG_PORT`, manteniendo la aplicación y PostgreSQL dentro del grupo estable `catalog-control`.
+- Docker Desktop mostrará `catalog-control-app-1` y `catalog-control-db-1`; la imagen propia queda versionada como `catalog-control-app:0.1.0` y la base usa la imagen oficial `postgres:18-bookworm`.
+- Se actualizan instrucciones, pruebas E2E y URLs locales para que el acceso correcto sea `http://127.0.0.1:3010`.
+- Se crean secretos locales fuera de Git, se levantan ambos contenedores saludables y se recupera en PostgreSQL una copia del catálogo SQLite actual: 46 entidades y 107 registros.
+- Chart Intelligence Platform permanece intacto en el puerto 3000; Catalog Control responde correctamente en el 3010.
+
 ## 2026-09-14 · Validación Docker/PostgreSQL local · Sin Commit
 
 - Confirmada ruta real DavidAppleton: helper de renombrado agotó espera; CatalogControl todavía no existe. No se forzó otro intento.

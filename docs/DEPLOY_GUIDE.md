@@ -18,7 +18,7 @@ if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
 npm run dev
 ```
 
-Abre http://127.0.0.1:3000. Esta dirección solo sirve en este ordenador. No la expongas mediante un túnel: la vista DEV no pide contraseña. Los contenedores funcionan en modo producción y nunca habilitan esta excepción.
+Abre http://127.0.0.1:3010. Esta dirección solo sirve en este ordenador. El puerto 3010 está reservado para Catalog Control porque otro proyecto usa el 3000. No la expongas mediante un túnel: la vista DEV no pide contraseña. Los contenedores funcionan en modo producción y nunca habilitan esta excepción.
 
 La base local está en `private/catalog.sqlite`. Para una copia portable mientras está abierta, usa el ZIP completo de la interfaz; JSON copia solo metadatos. No copies solo SQLite ignorando su WAL. En una instalación nueva, `private/catalog.json` se carga una vez. El importador `npm run import:notion` lee la exportación privada `private/notion-source.json` y produce ese JSON: no consulta Notion en vivo ni sustituye una base existente. No ejecutarlo como paso rutinario de arranque.
 
@@ -41,7 +41,7 @@ El script guarda el hash de la contraseña y secretos aleatorios en `private/sec
 
 ## 3. Construir los contenedores
 
-Primero `docker info` debe funcionar. El 14 de septiembre responde correctamente y el ensayo aislado está validado; volver a comprobarlo si se retoma en otro momento. No uses Factory Reset. Si npm run dev sigue abierto en el puerto 3000, detén únicamente ese servidor con Ctrl+C antes de iniciar Compose, que publica el mismo puerto.
+Primero `docker info` debe funcionar. El 14 de septiembre responde correctamente y el ensayo aislado está validado; volver a comprobarlo si se retoma en otro momento. No uses Factory Reset. Catalog Control publica el puerto 3010 del host; su puerto interno sigue siendo 3000.
 
 ```powershell
 docker compose config --quiet
@@ -50,7 +50,7 @@ docker compose up -d
 docker compose ps
 ```
 
-La primera puesta en marcha crea una base vacía y un usuario de aplicación sin privilegios de administrador. PostgreSQL no publica el puerto 5432. La app publica solo 127.0.0.1:3000 para un Reverse Proxy del mismo equipo. La inicialización SQL se ejecuta únicamente con un volumen nuevo; cambiar schema.sql no migra por sí solo un volumen existente.
+La primera puesta en marcha crea una base vacía y un usuario de aplicación sin privilegios de administrador. PostgreSQL no publica el puerto 5432. La app publica solo 127.0.0.1:3010 para un Reverse Proxy del mismo equipo. La inicialización SQL se ejecuta únicamente con un volumen nuevo; cambiar schema.sql no migra por sí solo un volumen existente.
 
 No hace falta cargar tus datos durante el Build: la imagen contiene código, no tu catálogo. Entra por HTTPS después de configurar el acceso y, en Copias de seguridad, restaura el ZIP completo exportado de tu vista local. Revisa los recuentos antes de seguir.
 
@@ -59,17 +59,17 @@ No hace falta cargar tus datos durante el Build: la imagen contiene código, no 
 Construye la imagen fuera del NAS: sus 2 GB de RAM se comparten con DSM y los paquetes instalados. El tamaño real y el consumo deben medirse después del primer arranque, no se garantizan de antemano.
 
 ```powershell
-docker buildx build --platform linux/amd64 --load -t david-appleton:0.1.0 .
-docker save -o private/david-appleton-0.1.0.tar david-appleton:0.1.0
+docker buildx build --platform linux/amd64 --load -t catalog-control-app:0.1.0 .
+docker save -o private/catalog-control-app-0.1.0.tar catalog-control-app:0.1.0
 ```
 
 Cuando el propietario autorice desplegar:
 
 1. Crea una carpeta privada del proyecto en el NAS. Copia Compose, `database/`, `docker/` y los secretos por un canal privado. No los publiques.
 2. En Container Manager, importa la imagen TAR. El TAR no contiene tu catálogo ni secretos.
-3. En una copia NAS de Compose sustituye `build: .` de app por `image: david-appleton:0.1.0`. Mantén el nombre del proyecto y el volumen estables. Usa rutas existentes del NAS para los archivos montados.
+3. En una copia NAS de Compose elimina `build: .` de app y conserva `image: catalog-control-app:0.1.0`. Mantén el nombre del proyecto y el volumen estables. Usa rutas existentes del NAS para los archivos montados.
 4. Crea el proyecto en Container Manager con esa carpeta y YAML. Comprueba que los dos servicios estén healthy.
-5. Configura un Reverse Proxy HTTPS de DSM hacia `127.0.0.1:3000` en el mismo NAS. No publiques PostgreSQL ni el panel DSM para acceder al catálogo.
+5. Configura un Reverse Proxy HTTPS de DSM hacia `127.0.0.1:3010` en el mismo NAS. No publiques PostgreSQL ni el panel DSM para acceder al catálogo.
 6. Configura `CATALOG_APP_URL` con la dirección HTTPS exacta elegida, sin barra final. Debe coincidir con la dirección que abres; protege los guardados contra peticiones de otros sitios.
 7. Accede con la contraseña del catálogo y restaura el ZIP completo. Comprueba una canción, una versión, los créditos, la descarga y reproducción de un archivo y una nueva copia completa.
 
@@ -157,5 +157,5 @@ Procedimiento previsto para una base anterior llamada catalog, con copia recuper
 | PGHOST / PGPORT / PGDATABASE / PGUSER | Conexión PostgreSQL; Compose fija host db, base catalog y usuario catalog_app |
 | PGPASSWORD_FILE / PGPASSWORD | pg admite archivo secreto preferente o valor de entorno |
 
-compose.yaml usa por defecto CATALOG_APP_URL=https://localhost; no basta para acceso remoto ni configura por sí mismo un certificado. Definir la URL real antes de recrear app. Las instrucciones no autorizan publicar ni cambiar la configuración del NAS.
+compose.yaml usa por defecto CATALOG_APP_URL=http://127.0.0.1:3010 para la instalación local. Para acceso remoto hay que definir la URL HTTPS real antes de recrear app. Las instrucciones no autorizan publicar ni cambiar la configuración del NAS.
 

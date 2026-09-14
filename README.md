@@ -4,6 +4,8 @@
 
 Primera versión funcional del catálogo personal: canciones, grabaciones, vídeos, lanzamientos, letras, autores, registros y documentos. Interfaz editorial en español, móvil y escritorio, con modos oscuro y claro. Identidad visual provisional propia de David Appleton.
 
+En Docker Desktop el proyecto se identifica como `catalog-control`, con los contenedores estables `catalog-control-app-1` y `catalog-control-db-1`. La aplicación usa la imagen `catalog-control-app:0.1.0` y PostgreSQL la imagen oficial `postgres:18-bookworm`.
+
 ## Abrir en este ordenador
 
 Necesitas Node.js 24. Desde esta carpeta:
@@ -14,7 +16,7 @@ if (-not (Test-Path .env.local)) { Copy-Item .env.example .env.local }
 npm run dev
 ```
 
-Abre http://127.0.0.1:3000. El modo DEV está limitado a este ordenador. Usa SQLite local en `private/catalog.sqlite`; Docker usa PostgreSQL propio. Si existe `private/catalog.json`, la base local nueva lo importa una sola vez. No hay dependencia de Supabase alojado ni pagos integrados.
+Abre http://127.0.0.1:3010. El puerto 3010 identifica Catalog Control y evita interferir con otros proyectos de este ordenador. El modo DEV está limitado a este ordenador. Usa SQLite local en `private/catalog.sqlite`; Docker usa PostgreSQL propio. Si existe `private/catalog.json`, la base local nueva lo importa una sola vez. No hay dependencia de Supabase alojado ni pagos integrados.
 
 ## Lo que puedes hacer
 
@@ -39,7 +41,7 @@ npm run build
 npx playwright test --config playwright.files.config.ts
 ```
 
-La suite aislada arranca su servidor en el puerto 3002 después del Build y usa datos sintéticos. Requiere Chrome; `CHROME_PATH` permite indicar el ejecutable. La suite alternativa `npm run test:e2e` usa `TEST_BASE_URL` o el puerto 3000 y contiene escrituras/restauraciones: ejecutarla exclusivamente sobre un catálogo DEV desechable, sin ediciones simultáneas. Alcance y resultados en [VALIDATION](docs/VALIDATION.md).
+La suite aislada arranca su servidor en el puerto 3002 después del Build y usa datos sintéticos. Requiere Chrome; `CHROME_PATH` permite indicar el ejecutable. La suite alternativa `npm run test:e2e` usa `TEST_BASE_URL` o el puerto 3010 y contiene escrituras/restauraciones: ejecutarla exclusivamente sobre un catálogo DEV desechable, sin ediciones simultáneas. Alcance y resultados en [VALIDATION](docs/VALIDATION.md).
 
 ## Documentación
 

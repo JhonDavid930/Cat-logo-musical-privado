@@ -1,5 +1,11 @@
 # Validación y límites de la evidencia
 
+## Actualización: 2026-09-15
+
+Creado el proyecto local permanente `catalog-control` sin detener otros proyectos. `catalog-control-app-1` usa `catalog-control-app:0.1.0` y publica exclusivamente `127.0.0.1:3010`; `catalog-control-db-1` usa `postgres:18-bookworm` sin publicar PostgreSQL. Ambos healthchecks están saludables. La ruta devolvió HTTP 200 y el título esperado de David Appleton.
+
+Se generó un ZIP privado desde SQLite y se restauró mediante la API autenticada en PostgreSQL. El origen contenía 46 entidades, 107 registros y cero binarios; PostgreSQL devolvió los mismos recuentos. La base SQLite no se reemplazó. Chart Intelligence Platform sigue siendo el propietario del puerto 3000. Los secretos y la contraseña inicial permanecen bajo `private/`, excluidos de Git y del Build.
+
 ## Actualización: 2026-09-14
 
 Docker Engine 29.5.3 y Compose 5.1.4 operativos. Ejecutado `node scripts/test-docker.mjs` con resultado correcto, proyecto aislado `catalog-check-1a77ef6343`. El script construye la imagen del Dockerfile y utiliza Compose base con override de secretos temporales y único puerto loopback dinámico; no monta datos reales. Verificado:
@@ -55,12 +61,10 @@ Desde la raíz, con Node 24 y dependencias instaladas:
 4. Para repetir solo la última corrección: npx playwright test --config playwright.files.config.ts tests/attachments/releases.spec.ts.
 5. La prueba específica de sesión es node scripts/test-production-auth.mjs, con puerto 3001 libre y Build previo.
 
-npm run test:e2e usa TEST_BASE_URL o http://127.0.0.1:3000. Solo emplearlo en una instalación DEV desechable, sin ediciones simultáneas. No ejecutado durante esta revisión documental.
+npm run test:e2e usa TEST_BASE_URL o http://127.0.0.1:3010. Solo emplearlo en una instalación DEV desechable, sin ediciones simultáneas. No ejecutado durante esta revisión documental.
 
 ## Pendiente de validar o realizar
 
-- Docker Build/arranque real, conexión PostgreSQL, migraciones 002/003 sobre base previa, backup y recuperación PostgreSQL.
-- Volumen de archivos, permisos del usuario node, reinicio de servicios y consistencia conjunta de base/originales en Docker.
 - NAS/VPS, HTTPS externo, proxy, consumo de RAM, reinicio y recuperación ante corte eléctrico. No se transfirió ni desplegó el proyecto en NAS.
 - Tamaños reales de 512 MiB por archivo u 8 GiB por ZIP, carga y todos los códecs. Se ensayaron límites lógicos, WAV PCM y WebM generado por Chrome.
 - Lectores: PDF depende del navegador; Word muestra texto sin maquetación; Excel muestra valores guardados dentro de límites y no calcula fórmulas.
