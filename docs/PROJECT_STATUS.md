@@ -46,6 +46,7 @@ Notion conservaba una relación `Distributor` en los diez lanzamientos originale
 | Área | Estado al cierre |
 |---|---|
 | Fichas, relaciones, búsqueda, letras, estados y métricas | Implementadas; pruebas locales registradas. |
+| CRUD y eliminación | Crear, consultar y editar estaban operativos; eliminar exige título exacto y limpia dependencias directas conservando entidades relacionadas. |
 | Géneros y créditos profesionales/autores | Implementados; procedencia y separación de porcentajes comprobadas. |
 | Archivos privados y ZIP | Implementados y probados con archivos sintéticos; no todos los códecs ni tamaños máximos reales. |
 | UPC/EAN, tipos y lanzamientos compartidos | Implementados y probados localmente; checksum no acredita asignación. |

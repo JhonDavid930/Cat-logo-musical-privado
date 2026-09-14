@@ -182,7 +182,10 @@ export const catalogSchema = z
     registrations: z.array(registrationSchema).max(100000),
     credits: z.array(creditSchema).max(30000),
     documents: z.array(documentSchema).max(30000),
-    proOrganizations: z.array(z.string().trim().min(1).max(100)).max(10000).default([]),
+    proOrganizations: z
+      .array(z.string().trim().min(1).max(100))
+      .max(10000)
+      .default([]),
   })
   .transform(normalizeProOrganizations)
   .superRefine((catalog, ctx) => {
@@ -288,6 +291,25 @@ export const emptyCatalog: Catalog = {
   documents: [],
   proOrganizations: ["BMI", "ASCAP", "SGAE"],
 };
+
+export function removeEntity(catalog: Catalog, entityId: string): Catalog {
+  if (!catalog.entities.some((entity) => entity.id === entityId))
+    return catalog;
+  return catalogSchema.parse({
+    ...catalog,
+    entities: catalog.entities.filter((entity) => entity.id !== entityId),
+    links: catalog.links.filter(
+      (link) => link.fromId !== entityId && link.toId !== entityId,
+    ),
+    registrations: catalog.registrations.filter(
+      (registration) => registration.entityId !== entityId,
+    ),
+    credits: catalog.credits.filter((credit) => credit.entityId !== entityId),
+    documents: catalog.documents.filter(
+      (document) => document.entityId !== entityId,
+    ),
+  });
+}
 
 export function progress(registrations: Registration[]) {
   const applicable = registrations.filter(

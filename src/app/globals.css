@@ -12,6 +12,8 @@
   --success: #bbd5b7;
   --warning: #e8bf99;
   --ring: #e8c8b2;
+  --danger: #f0aaa2;
+  --danger-surface: #2b1d1c;
 }
 * {
   box-sizing: border-box;
@@ -101,6 +103,18 @@ button.subtle:hover {
   background: transparent;
   color: var(--text);
 }
+button.danger {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+button.danger:hover:not(:disabled) {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--bg);
+}
+button.danger:disabled {
+  cursor: not-allowed;
+}
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
@@ -178,6 +192,8 @@ small {
   --success: #365e35;
   --warning: #774b23;
   --ring: #824835;
+  --danger: #8b2929;
+  --danger-surface: #fff1ef;
 }
 .sidebar {
   padding: 24px 20px 0;
@@ -807,6 +823,21 @@ dd {
 .note p {
   margin: 0;
   white-space: pre-wrap;
+}
+.danger-zone {
+  border-color: var(--danger);
+  background: var(--danger-surface);
+}
+.danger-zone h2 {
+  color: var(--danger);
+}
+.danger-zone label {
+  max-width: 620px;
+}
+.danger-zone > small {
+  display: block;
+  color: var(--muted);
+  margin: 8px 0 18px;
 }
 .note h3 {
   font-size: 13px;

@@ -3,7 +3,11 @@ import { catalogSchema } from "@/lib/catalog";
 import { ConflictError } from "@/lib/database";
 import { loadCatalog, saveCatalog } from "@/lib/storage";
 import { boundedJson, RequestBodyError } from "@/lib/request-json";
-import { validateFileReferences, FileError } from "@/lib/files";
+import {
+  validateFileReferences,
+  removeStoredFile,
+  FileError,
+} from "@/lib/files";
 import { changedReleaseCodeIssue } from "@/lib/release-codes";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -29,9 +33,22 @@ export async function PUT(request: Request) {
         { status: 400 },
       );
     await validateFileReferences(parsed.data);
-    const codeIssue = changedReleaseCodeIssue(parsed.data, await loadCatalog());
+    const previous = await loadCatalog();
+    const codeIssue = changedReleaseCodeIssue(parsed.data, previous);
     if (codeIssue) return Response.json({ error: codeIssue }, { status: 400 });
-    return Response.json(await saveCatalog(parsed.data));
+    const retainedFiles = new Set(
+      parsed.data.documents.flatMap((document) =>
+        document.file ? [document.file.id] : [],
+      ),
+    );
+    const removedFiles = previous.documents.flatMap((document) =>
+      document.file && !retainedFiles.has(document.file.id)
+        ? [document.file.id]
+        : [],
+    );
+    const saved = await saveCatalog(parsed.data);
+    await Promise.all(removedFiles.map(removeStoredFile));
+    return Response.json(saved);
   } catch (error) {
     if (error instanceof FileError)
       return Response.json({ error: error.message }, { status: error.status });

@@ -199,6 +199,12 @@ export async function validateFileReferences(catalog: Catalog) {
   }
 }
 
+export async function removeStoredFile(id: string) {
+  const filename = blobPath(id);
+  await unlink(filename).catch(() => {});
+  await unlink(`${filename}.json`).catch(() => {});
+}
+
 export function parseRange(value: string | null, size: number) {
   if (!value) return null;
   const match = /^bytes=(\d*)-(\d*)$/.exec(value);

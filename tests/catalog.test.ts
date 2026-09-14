@@ -6,6 +6,7 @@ import {
   emptyCatalog,
   mapNotionStatus,
   progress,
+  removeEntity,
   registrationsFor,
   searchEntities,
   type Catalog,
@@ -144,6 +145,49 @@ test("rechaza relaciones colgantes e incompatibles", () => {
   assert.equal(catalogSchema.safeParse(c).success, false);
   c.links[0].toId = c.entities[0].id;
   assert.equal(catalogSchema.safeParse(c).success, false);
+});
+test("eliminar una ficha limpia sus datos directos y conserva las relacionadas", () => {
+  const c = fixture();
+  const recording = entity("recording");
+  c.entities.push(recording);
+  c.links.push({
+    id: randomUUID(),
+    fromId: recording.id,
+    toId: c.entities[0].id,
+    relation: "recording_work",
+  });
+  c.registrations.push(registration(recording.id));
+  c.credits.push({
+    id: randomUUID(),
+    entityId: recording.id,
+    name: "Intérprete",
+    role: "Intérprete principal",
+    scope: "professional",
+    share: null,
+    sourceUrl: "",
+  });
+  c.documents.push({
+    id: randomUUID(),
+    entityId: recording.id,
+    name: "Archivo",
+    kind: "other",
+    url: "",
+    notes: "",
+  });
+  const removed = removeEntity(c, recording.id);
+  assert.equal(
+    removed.entities.some((item) => item.id === recording.id),
+    false,
+  );
+  assert.equal(
+    removed.entities.some((item) => item.id === c.entities[0].id),
+    true,
+  );
+  assert.equal(removed.links.length, 0);
+  assert.equal(removed.registrations.length, 1);
+  assert.equal(removed.credits.length, 0);
+  assert.equal(removed.documents.length, 0);
+  assert.equal(catalogSchema.safeParse(removed).success, true);
 });
 test("una composición incluye registros de todas sus versiones sin duplicarlos", () => {
   const c = fixture(),

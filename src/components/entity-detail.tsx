@@ -6,10 +6,12 @@ import {
   Link2,
   Plus,
   Save,
+  Trash2,
 } from "lucide-react";
 import {
   kindLabels,
   progress,
+  removeEntity,
   registrationsFor,
   relatedIds,
   statusLabels,
@@ -42,10 +44,11 @@ export default function EntityDetail({
   catalog: Catalog;
   save: SaveCatalog;
   busy: boolean;
-  open: (id: string) => void;
+  open: (id: string | null) => void;
   onCatalogChange: (catalog: Catalog) => void;
 }) {
   const [tab, setTab] = useState("summary");
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const ids = relatedIds(catalog, entity.id),
     related = catalog.entities.filter(
       (e) => e.id !== entity.id && ids.has(e.id),
@@ -576,6 +579,45 @@ export default function EntityDetail({
               </form>
             </section>
           )}
+          <section className="panel danger-zone" aria-labelledby="delete-title">
+            <p className="eyebrow">ELIMINACIÓN DEFINITIVA</p>
+            <h2 id="delete-title">Eliminar esta ficha</h2>
+            <p>
+              Se eliminará esta ficha de tipo{" "}
+              {kindLabels[entity.kind].toLowerCase()}, junto con sus registros,
+              créditos y archivos directos. Las composiciones, grabaciones y
+              lanzamientos relacionados se conservarán como fichas
+              independientes.
+            </p>
+            <p className="muted">
+              Esta acción no se puede deshacer desde la ficha. Descarga una
+              copia de seguridad si necesitas conservar una versión anterior.
+            </p>
+            <label>
+              Escribe el título exacto para confirmar
+              <input
+                value={deleteConfirmation}
+                onChange={(event) => setDeleteConfirmation(event.target.value)}
+                autoComplete="off"
+                placeholder={entity.title}
+                aria-describedby="delete-confirmation-help"
+              />
+            </label>
+            <small id="delete-confirmation-help">
+              Debes escribir: {entity.title}
+            </small>
+            <button
+              type="button"
+              className="danger"
+              disabled={busy || deleteConfirmation !== entity.title}
+              onClick={async () => {
+                if (await save(removeEntity(catalog, entity.id))) open(null);
+              }}
+            >
+              <Trash2 size={16} />
+              {busy ? "Eliminando…" : "Eliminar definitivamente"}
+            </button>
+          </section>
         </>
       )}
     </article>

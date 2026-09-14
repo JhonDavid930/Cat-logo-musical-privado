@@ -1,5 +1,12 @@
 # Historial de cambios
 
+## 2026-09-15 · CRUD completo y eliminación segura
+
+- Añadida una zona de eliminación en `Editar ficha` para composiciones, grabaciones, vídeos y lanzamientos.
+- La confirmación exige escribir el título exacto; después elimina la ficha, relaciones, registros, créditos, documentos y binarios directos.
+- Las fichas relacionadas se conservan para evitar que eliminar una grabación borre también su composición o un lanzamiento compartido.
+- Añadidas pruebas unitarias y de navegador aislado para eliminación, integridad referencial y conservación de entidades relacionadas.
+
 ## 2026-09-15 · Distribuidoras recuperadas desde Notion
 
 - Añadido el campo editable de distribuidora a los lanzamientos y a la vista de lanzamientos relacionados de cada canción.

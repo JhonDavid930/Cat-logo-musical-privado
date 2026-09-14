@@ -264,3 +264,94 @@ test("álbum compartido, UPC con ceros, single adicional y sociedad PRO persiste
     page.locator(".agency-card").filter({ hasText: "PRO · BMI" }),
   ).toHaveCount(1);
 });
+
+test("CRUD elimina una ficha y sus dependencias sin borrar la relacionada", async ({ page, request }) => {
+  const login = await request.post("/api/auth", {
+    headers: { origin: base },
+    data: { password: "synthetic-files-test-password" },
+  });
+  const cookie = login.headers()["set-cookie"].split(";")[0];
+  await page.context().addCookies([{
+    name: "da-session",
+    value: cookie.split("=")[1],
+    url: base,
+    httpOnly: true,
+    sameSite: "Strict",
+  }]);
+  const current = await (await request.get("/api/catalog", { headers: { cookie } })).json();
+  const work: Entity = {
+    id: randomUUID(),
+    kind: "work",
+    title: "Composición que debe conservarse",
+    code: "",
+    genre: "",
+    year: "",
+    language: "",
+    lyrics: "",
+    notes: "",
+    url: "",
+    sourceUrls: [],
+    publication: "unchecked",
+  };
+  const recording: Entity = {
+    ...work,
+    id: randomUUID(),
+    kind: "recording",
+    title: "Grabación incorrecta para eliminar",
+  };
+  const catalog: Catalog = {
+    ...structuredClone(emptyCatalog),
+    revision: current.revision,
+    entities: [work, recording],
+    links: [{
+      id: randomUUID(),
+      fromId: recording.id,
+      toId: work.id,
+      relation: "recording_work",
+    }],
+    registrations: [{
+      id: randomUUID(),
+      entityId: recording.id,
+      agency: "SoundExchange",
+      status: "registered",
+      applicable: "yes",
+      evidenceUrl: "",
+      verifiedAt: "",
+      notes: "",
+      sourceValues: [],
+    }],
+  };
+  expect((await request.put("/api/catalog", {
+    headers: { cookie, origin: base },
+    data: catalog,
+  })).status()).toBe(200);
+  const parameters = new URLSearchParams({
+    entityId: recording.id,
+    kind: "other",
+    filename: "eliminar.txt",
+    name: "Archivo que debe eliminarse",
+  });
+  const upload = await request.post(`/api/documents/upload?${parameters}`, {
+    headers: { cookie, origin: base, "Content-Type": "application/octet-stream" },
+    data: Buffer.from("contenido temporal"),
+  });
+  expect(upload.status()).toBe(200);
+  const documentId = ((await upload.json()) as Catalog).documents[0].id;
+
+  await page.goto(`/?song=${recording.id}`);
+  await page.getByRole("button", { name: "Editar ficha" }).click();
+  const removeButton = page.getByRole("button", { name: "Eliminar definitivamente" });
+  await expect(removeButton).toBeDisabled();
+  await page.getByLabel("Escribe el título exacto para confirmar").fill(recording.title);
+  await expect(removeButton).toBeEnabled();
+  await removeButton.click();
+  await expect(page.getByRole("status")).toContainText("Cambios guardados");
+
+  const saved = (await (await request.get("/api/catalog", { headers: { cookie } })).json()) as Catalog;
+  expect(saved.entities.some((entity) => entity.id === recording.id)).toBe(false);
+  expect(saved.entities.some((entity) => entity.id === work.id)).toBe(true);
+  expect(saved.links).toHaveLength(0);
+  expect(saved.registrations).toHaveLength(0);
+  expect(saved.documents).toHaveLength(0);
+  expect((await request.get(`/api/documents/${documentId}`, { headers: { cookie } })).status()).toBe(404);
+});

@@ -25,7 +25,7 @@ Los catálogos oficiales en CSV se previsualizan con `npm run import:bmi` y `npm
 ## Lo que puedes hacer
 
 - Buscar por título, autor, letra, género o código, incluyendo grabaciones relacionadas.
-- Crear y editar fichas, letra, autores y porcentajes; vincular versiones sin duplicar obras.
+- Crear, consultar, editar y eliminar fichas; la eliminación confirmada limpia sus relaciones, registros, créditos y archivos directos sin borrar otras versiones o lanzamientos relacionados.
 - Registrar estados por entidad, sociedad PRO concreta, aplicabilidad y evidencia revisada por separado.
 - Crear/asociar lanzamientos compartidos y editar su UPC/EAN y tipo Single, EP o Álbum desde cada canción.
 - Subir varios documentos, audios y vídeos por canción; leer PDF, texto, Word/Excel y reproducir medios compatibles. También guardar notas sin archivo o enlaces opcionales.
