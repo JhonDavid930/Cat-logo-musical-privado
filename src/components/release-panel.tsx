@@ -26,6 +26,13 @@ export default function ReleasePanel({
   const [creating, setCreating] = useState(false);
   const ids = releaseIds(catalog, entity);
   const releases = catalog.entities.filter((item) => ids.has(item.id));
+  const distributors = [
+    ...new Set(
+      catalog.entities
+        .filter((item) => item.kind === "release" && item.distributor)
+        .map((item) => item.distributor!),
+    ),
+  ].sort((left, right) => left.localeCompare(right, "es"));
   const available = catalog.entities.filter(
     (item) => item.kind === "release" && !ids.has(item.id),
   );
@@ -59,11 +66,14 @@ export default function ReleasePanel({
           release={release}
           catalog={catalog}
           busy={busy}
-          save={async (code, releaseType) =>
+          distributors={distributors}
+          save={async (code, releaseType, distributor) =>
             save({
               ...catalog,
               entities: catalog.entities.map((item) =>
-                item.id === release.id ? { ...item, code, releaseType } : item,
+                item.id === release.id
+                  ? { ...item, code, releaseType, distributor }
+                  : item,
               ),
             })
           }
@@ -90,6 +100,7 @@ export default function ReleasePanel({
                   releaseType: String(
                     data.get("releaseType"),
                   ) as Entity["releaseType"],
+                  distributor: String(data.get("distributor")).trim(),
                   genre: "",
                   year: "",
                   language: "",
@@ -120,6 +131,10 @@ export default function ReleasePanel({
                 />
               </label>
               <ReleaseTypeField />
+              <DistributorField
+                listId="new-release-distributors"
+                distributors={distributors}
+              />
               <UpcField />
               <button disabled={busy}>Crear lanzamiento asociado</button>
             </form>
@@ -205,12 +220,18 @@ function ReleaseEditor({
   busy,
   save,
   open,
+  distributors,
 }: {
   release: Entity;
   catalog: Catalog;
   busy: boolean;
-  save: (code: string, releaseType: Entity["releaseType"]) => Promise<boolean>;
+  save: (
+    code: string,
+    releaseType: Entity["releaseType"],
+    distributor: string,
+  ) => Promise<boolean>;
   open?: () => void;
+  distributors: string[];
 }) {
   const duplicates = release.code
     ? catalog.entities.filter(
@@ -223,7 +244,12 @@ function ReleaseEditor({
   return (
     <article className="release-entry">
       <h3>{release.title}</h3>
-      <p>{releaseTypeLabels[releaseTypeFromSource(release)]}</p>
+      <p>
+        {releaseTypeLabels[releaseTypeFromSource(release)]}
+        {release.distributor
+          ? ` · Distribuidora: ${release.distributor}`
+          : " · Distribuidora sin indicar"}
+      </p>
       <form
         className="inline-form"
         onSubmit={async (event) => {
@@ -232,12 +258,18 @@ function ReleaseEditor({
           await save(
             String(data.get("upc")),
             String(data.get("releaseType")) as Entity["releaseType"],
+            String(data.get("distributor")).trim(),
           );
         }}
       >
         <ReleaseTypeField value={releaseTypeFromSource(release)} />
+        <DistributorField
+          listId={`release-distributors-${release.id}`}
+          value={release.distributor}
+          distributors={distributors}
+        />
         <UpcField value={release.code} />
-        <button disabled={busy}>Guardar UPC / EAN</button>
+        <button disabled={busy}>Guardar lanzamiento</button>
         {open && (
           <button type="button" className="subtle" onClick={open}>
             Ver lanzamiento
@@ -264,6 +296,35 @@ function ReleaseEditor({
         </details>
       )}
     </article>
+  );
+}
+
+function DistributorField({
+  listId,
+  value = "",
+  distributors,
+}: {
+  listId: string;
+  value?: string;
+  distributors: string[];
+}) {
+  return (
+    <label>
+      Distribuidora
+      <input
+        name="distributor"
+        type="text"
+        list={listId}
+        defaultValue={value}
+        maxLength={150}
+        placeholder="Amuse, Diskover Co.…"
+      />
+      <datalist id={listId}>
+        {distributors.map((distributor) => (
+          <option key={distributor} value={distributor} />
+        ))}
+      </datalist>
+    </label>
   );
 }
 

@@ -2,6 +2,8 @@
 
 ## Actualización: 2026-09-15
 
+Las diez relaciones `Distributor` de los lanzamientos originales de Notion se resolvieron directamente: ocho corresponden a Amuse y dos a Diskover Co. Se añadió persistencia del campo a la prueba de lanzamientos compartidos. El dato se conserva en SQLite y PostgreSQL y aparece en el editor de lanzamientos relacionados; los 20 lanzamientos procedentes únicamente de Spotify siguen sin distribuidora declarada. La prueba aislada de navegador para lanzamientos, edición, persistencia, móvil y accesibilidad volvió a pasar.
+
 Importados los CSV privados de BMI y SoundExchange en SQLite y PostgreSQL después de crear copias ZIP independientes antes de cada operación. Resultado final: 213 entidades —67 composiciones, 111 grabaciones, cinco vídeos y 30 lanzamientos—, 213 relaciones, 210 registros y 286 créditos. Las copias finales están en `private/backups/final-bmi-soundexchange-*-2026-09-15.zip`.
 
 BMI: 67 Title Numbers, 154 participantes, 54 estados Reconciled y 13 Pending Society Review. Se probaron encabezado/campos CSV, conciliación, estados, participantes con porcentaje nulo, ISWC repetido y segunda ejecución. SoundExchange: 65 SXID, 17 sin ISRC, 47 grabaciones conciliadas y 18 nuevas; 65 filas declaran Hold No. Se probaron conciliación por ISRC/SXID, filas sin ISRC, reparación de caracteres dañados, crédito profesional de intérprete y segunda ejecución. El propietario confirmó que David Appleton es su nombre artístico como intérprete, Jhon David Valdez Calier su nombre legal y que los títulos de la exportación corresponden a su catálogo.

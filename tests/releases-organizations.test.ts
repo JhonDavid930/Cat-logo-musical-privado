@@ -109,6 +109,7 @@ test("un álbum compartido y varios lanzamientos por canción persisten sin dupl
     title: "Álbum compartido",
     code: "0036000291452",
     releaseType: "album" as const,
+    distributor: "Amuse",
   };
   const single = {
     ...album,
@@ -151,6 +152,10 @@ test("un álbum compartido y varios lanzamientos por canción persisten sin dupl
   assert.equal(
     saved.entities.find((entity) => entity.id === album.id)!.releaseType,
     "album",
+  );
+  assert.equal(
+    saved.entities.find((entity) => entity.id === album.id)!.distributor,
+    "Amuse",
   );
   assert.equal(releaseIds(saved, song).size, 2);
   assert.equal(releaseIds(saved, second).size, 1);

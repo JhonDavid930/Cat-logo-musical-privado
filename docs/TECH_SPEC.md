@@ -50,6 +50,10 @@ La operación es repetible: usa UUID deterministas y evita duplicar fichas o rel
 
 `src/lib/soundexchange-import.ts` identifica cada fila por SXID y concilia grabaciones por ISRC. Cuando falta ISRC solo reutiliza una grabación si el título tiene una coincidencia única; de lo contrario crea una ficha separada por SXID. Conserva porcentaje efectivo, Hold, registrante, Payee ID y tipo de asociación en la fuente privada. El propietario confirmó que David Appleton es su nombre artístico como intérprete y Jhon David Valdez Calier su nombre legal: `Association Type: Artist` crea un crédito profesional `Intérprete principal (SoundExchange)` bajo el nombre artístico, con porcentaje nulo y nunca una autoría. Ambos importadores usan UUID deterministas, validación completa y segunda ejecución sin duplicados.
 
+## Distribuidoras
+
+Cada entidad `release` admite un campo opcional `distributor` de hasta 150 caracteres. La interfaz reúne los valores existentes en un `datalist`: facilita reutilizarlos y también permite registrar una empresa nueva. `scripts/import-notion.ts` puede resolver las relaciones `Distributor` con un mapa privado URL→nombre en `private/notion-distributors.json`. El nombre de sello recibido en `Label` desde Spotify se conserva como procedencia y no rellena este campo, porque sello y distribuidora pueden ser entidades distintas.
+
 ## Cálculos
 
 El contrato JSON tiene `version: 1`, `revision`, `importedAt`, `sourceSummary`, `entities`, `links`, `registrations`, `credits`, `documents` y `proOrganizations`. Una escritura sustituye las colecciones en transacción y aumenta la revisión; `proOrganizations` se une a la lista existente. SQLite usa transacción inmediata; PostgreSQL bloquea la fila de revisión con `FOR UPDATE`. El audit log registra guardados, pero no es un historial recuperable de todas las versiones.

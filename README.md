@@ -2,7 +2,7 @@
 
 **Para retomar el proyecto, empieza por [Estado y próximos pasos](docs/PROJECT_STATUS.md).** Estado actualizado: 15 de septiembre de 2026. La carpeta real sigue siendo DavidAppleton; el renombrado a CatalogControl está pendiente.
 
-Primera versión funcional del catálogo personal: canciones, grabaciones, vídeos, lanzamientos, letras, autores, registros y documentos. Interfaz editorial en español, móvil y escritorio, con modos oscuro y claro. Identidad visual provisional propia de David Appleton.
+Primera versión funcional del catálogo personal: canciones, grabaciones, vídeos, lanzamientos, distribuidoras, letras, autores, registros y documentos. Interfaz editorial en español, móvil y escritorio, con modos oscuro y claro. Identidad visual provisional propia de David Appleton.
 
 En Docker Desktop el proyecto se identifica como `catalog-control`, con los contenedores estables `catalog-control-app-1` y `catalog-control-db-1`. La aplicación usa la imagen `catalog-control-app:0.1.0` y PostgreSQL la imagen oficial `postgres:18-bookworm`.
 
@@ -61,4 +61,3 @@ No se ha publicado el catálogo ni realizado Commit o Push durante el trabajo do
 Para repetir el ensayo Docker con datos sintéticos: `node scripts/test-docker.mjs`. Crea un proyecto separado, secretos temporales y volúmenes propios; al terminar detiene sus contenedores y conserva esos volúmenes/backups para diagnóstico. No usa el catálogo real. Requiere Docker operativo y espacio para Build e imágenes.
 
 Las sociedades PRO nuevas se guardan en una lista compartida: al guardar «Otra sociedad», podrás elegirla al crear o editar registros de cualquier canción, también después de reiniciar. BMI, ASCAP y SGAE vienen como opciones; elegirlas no confirma ningún registro.
-

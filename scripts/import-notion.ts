@@ -15,6 +15,11 @@ type Row = Record<string, string>;
 const source = JSON.parse(
   await readFile("private/notion-source.json", "utf8"),
 ) as Record<string, { results: Row[]; has_more: boolean }>;
+const distributors = existsSync("private/notion-distributors.json")
+  ? (JSON.parse(
+      await readFile("private/notion-distributors.json", "utf8"),
+    ) as Record<string, string>)
+  : {};
 if (Object.values(source).some((s) => s.has_more))
   throw new Error(
     "Exportación incompleta: recupera las páginas restantes antes de importar.",
@@ -157,6 +162,10 @@ const ownReleases = source.releases.results.filter(
 for (const row of ownReleases) {
   const entity = base(row, "release", row["Release Title"], row.UPC);
   entity.releaseType = releaseTypeFromSource(entity);
+  entity.distributor = relations(row, "Distributor")
+    .map((url) => distributors[url])
+    .filter(Boolean)
+    .join(", ");
   entity.year = row["date:Original Release Date: (YYYY-MM-DD):start"] ?? "";
   entity.notes = `Estado de planificación en Notion: ${row.Status ?? "sin comprobar"}. No se interpreta como confirmación de publicación.`;
   catalog.entities.push(entity);

@@ -26,6 +26,8 @@ Después se importaron los CSV entregados por el propietario. BMI contiene 67 Ti
 
 SoundExchange contiene 65 SXID: se añadieron 18 grabaciones, se enriquecieron 47, se añadieron 50 registros y se actualizaron 15. Las 17 filas sin ISRC se conservan por SXID. El propietario confirmó que David Appleton es su nombre artístico como intérprete y Jhon David Valdez Calier su nombre legal; cada asociación Artist se refleja como crédito profesional bajo el nombre artístico, nunca como autoría. Los tres estudios para piano de la exportación se conservan como grabaciones propias. La biblioteca inicia en «Todo el catálogo (213)» y permite filtrar Composiciones (67), Grabaciones (111), Vídeos (5) y Lanzamientos (30).
 
+Notion conservaba una relación `Distributor` en los diez lanzamientos originales. El 15 de septiembre se resolvieron las dos fichas relacionadas mediante la conexión autorizada: ocho lanzamientos indican Amuse y dos indican Diskover Co. El dato vive en la ficha de lanzamiento y se muestra también al abrir cualquier composición o grabación relacionada. Los otros veinte lanzamientos importados desde Spotify permanecen sin distribuidora hasta contar con una fuente del distribuidor; el campo `Label` de Spotify no se interpreta como distribuidora.
+
 ## Decisiones que hay que conservar
 
 | Decisión | Razón y consecuencia |
@@ -47,6 +49,7 @@ SoundExchange contiene 65 SXID: se añadieron 18 grabaciones, se enriquecieron 4
 | Géneros y créditos profesionales/autores | Implementados; procedencia y separación de porcentajes comprobadas. |
 | Archivos privados y ZIP | Implementados y probados con archivos sintéticos; no todos los códecs ni tamaños máximos reales. |
 | UPC/EAN, tipos y lanzamientos compartidos | Implementados y probados localmente; checksum no acredita asignación. |
+| Distribuidoras | Campo editable por lanzamiento; diez relaciones de Notion recuperadas: ocho Amuse y dos Diskover Co. |
 | Sociedades PRO compartidas | Pruebas de dos canciones, recarga, SQLite reabierta, deduplicación y copias. |
 | PostgreSQL y migraciones | Validados localmente; la instalación permanente contiene 213 entidades, 213 relaciones, 210 registros y 286 créditos tras conciliar Spotify, BMI y SoundExchange. |
 | Docker y volúmenes | Grupo `catalog-control` activo y saludable en el puerto 3010; Build/arranque, escritura, reinicio y recuperación superados. |

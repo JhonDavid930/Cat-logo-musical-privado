@@ -58,6 +58,7 @@ export const entitySchema = z.object({
     .optional(),
   publication: z.enum(["published", "unreleased", "unchecked"]),
   releaseType: z.enum(["single", "ep", "album", "unspecified"]).optional(),
+  distributor: z.string().trim().max(150).optional(),
 });
 export const registrationSchema = z
   .object({

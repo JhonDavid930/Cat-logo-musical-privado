@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 2026-09-15 · Distribuidoras recuperadas desde Notion
+
+- Añadido el campo editable de distribuidora a los lanzamientos y a la vista de lanzamientos relacionados de cada canción.
+- Resueltas las relaciones originales de Notion: ocho lanzamientos declaran Amuse y dos declaran Diskover Co.
+- El selector reutiliza las distribuidoras ya guardadas, pero permite escribir otra sin confundir sello discográfico con distribuidora.
+
 ## 2026-09-15 · Catálogos BMI y SoundExchange incorporados
 
 - Añadidos importadores CSV repetibles para BMI Title Number/ISWC y SoundExchange SXID/ISRC, con validación de columnas y conservación de las filas originales.

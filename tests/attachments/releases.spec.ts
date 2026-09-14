@@ -83,6 +83,7 @@ test("álbum compartido, UPC con ceros, single adicional y sociedad PRO persiste
   await create
     .getByRole("combobox", { name: "Tipo de lanzamiento", exact: true })
     .selectOption("album");
+  await create.getByLabel("Distribuidora").fill("Amuse");
   await create
     .getByRole("textbox", { name: "UPC / EAN del lanzamiento", exact: true })
     .fill("036000291452");
@@ -110,7 +111,7 @@ test("álbum compartido, UPC con ceros, single adicional y sociedad PRO persiste
     .getByRole("textbox", { name: "UPC / EAN del lanzamiento", exact: true })
     .fill("0036000291452");
   await page
-    .getByRole("button", { name: "Guardar UPC / EAN", exact: true })
+    .getByRole("button", { name: "Guardar lanzamiento", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText("Cambios guardados");
   await page.goto(`/?song=${first.id}`);
@@ -120,6 +121,9 @@ test("álbum compartido, UPC con ceros, single adicional y sociedad PRO persiste
   await expect(
     page.locator(".release-entry select[name=releaseType]"),
   ).toHaveValue("album");
+  await expect(
+    page.locator(".release-entry input[name=distributor]"),
+  ).toHaveValue("Amuse");
   await page
     .getByRole("button", { name: "Añadir lanzamiento y UPC", exact: true })
     .click();
@@ -144,7 +148,7 @@ test("álbum compartido, UPC con ceros, single adicional y sociedad PRO persiste
   await page
     .locator(".release-entry")
     .last()
-    .getByRole("button", { name: "Guardar UPC / EAN", exact: true })
+    .getByRole("button", { name: "Guardar lanzamiento", exact: true })
     .click();
   await expect(page.getByRole("status")).toContainText("12 dígitos");
   await page.reload();
