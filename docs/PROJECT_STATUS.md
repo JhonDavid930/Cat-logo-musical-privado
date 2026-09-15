@@ -1,6 +1,6 @@
 # Estado del proyecto y punto de reentrada
 
-Actualizado: **2026-09-15**. Docker/PostgreSQL están activos localmente como `catalog-control`, con la copia del catálogo disponible en PostgreSQL. Se repitieron las 28 pruebas unitarias/SQLite y TypeScript. Este documento permite retomar el proyecto sin leer la conversación.
+Actualizado: **2026-09-15**. Docker/PostgreSQL están activos localmente como `catalog-control`, con el catálogo disponible en PostgreSQL. La última suite consolidada tiene 42 pruebas unitarias, 12 recorridos E2E y pruebas aisladas de archivos/acceso. Este documento permite retomar el proyecto sin leer la conversación.
 
 Ruta real: `C:\Users\apple\Documents\DavidAppleton`. El nombre de carpeta deseado es CatalogControl, pero el helper del 12 de septiembre agotó sus 30 minutos sin poder renombrar. CatalogControl no existe a fecha de esta revisión. No se ha repetido el movimiento mientras Codex usa la carpeta.
 
@@ -10,7 +10,9 @@ Archivo privado de un único propietario: Jhon David Valdez Calier, cuyo nombre 
 
 ## Dónde nos quedamos
 
-El último cambio funcional terminado fue la **vista unificada por canción**. “Mi espacio” y “Mi música” muestran 79 canciones a partir de las 210 fichas técnicas actuales. Las diferencias de mayúsculas, tildes, apóstrofes, guiones y espacios no repiten una canción; una versión nombrada expresamente sigue separada. Abrir una fila reúne sus composiciones, grabaciones, vídeos, lanzamientos, ISRC, registros, documentos y créditos sin fusionar ni borrar las entidades originales.
+El último arreglo terminado fue el **acceso local desde localhost**. El propietario abrió `http://localhost:3010` y el login mostró por error que faltaba configurar el acceso. Los secretos sí estaban instalados: la causa era el rechazo de `Origin` porque Docker declaraba `http://127.0.0.1:3010`. Ambas direcciones loopback funcionan ahora en el mismo puerto, con la misma contraseña; orígenes ajenos y HTTPS remoto conservan comprobación estricta. Se probó login real en las dos direcciones y navegación Chrome sintética. Para reabrir: `http://localhost:3010` o `http://127.0.0.1:3010`.
+
+La **vista unificada por canción** también está terminada. “Mi espacio” y “Mi música” muestran 79 canciones a partir de las 210 fichas técnicas actuales. Las diferencias de mayúsculas, tildes, apóstrofes, guiones y espacios no repiten una canción; una versión nombrada expresamente sigue separada. Abrir una fila reúne sus composiciones, grabaciones, vídeos, lanzamientos, ISRC, registros, documentos y créditos sin fusionar ni borrar las entidades originales.
 
 El catálogo compartido de sociedades PRO también está terminado: guardar una sociedad propia la hace reutilizable al crear/editar registros de otras canciones y tras reiniciar. Deduplica espacios/mayúsculas, conserva nombres distintos y sobrevive aunque cambie el registro original. «Otra sociedad» vacía o con solo espacios no se guarda ni borra BMI; editar oculta el aviso de guardado anterior.
 

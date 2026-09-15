@@ -10,9 +10,17 @@ import {
 } from "@/lib/auth";
 const attempts = { count: 0, window: 0 };
 export async function POST(request: Request) {
-  if (!sameOrigin(request) || !isConfigured())
+  if (!isConfigured())
     return Response.json(
       { error: "El acceso privado todavía no está configurado." },
+      { status: 403 },
+    );
+  if (!sameOrigin(request))
+    return Response.json(
+      {
+        error:
+          "Esta dirección no está autorizada para iniciar sesión. Abre la dirección local del catálogo.",
+      },
       { status: 403 },
     );
   if (Date.now() - attempts.window > 60_000) {

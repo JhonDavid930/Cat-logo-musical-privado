@@ -145,17 +145,16 @@ Procedimiento previsto para una base anterior llamada catalog, con copia recuper
 
 ## Configuración de referencia
 
-| Variable | Uso actual |
-|---|---|
-| CATALOG_LOCAL_PREVIEW | true solo admite excepción de sesión en DEV loopback |
-| CATALOG_STORAGE | postgres selecciona pg; los demás valores usan SQLite |
-| CATALOG_DATA_DIR | Directorio SQLite/semilla; por defecto private |
-| CATALOG_FILES_DIR | Originales; por defecto CATALOG_DATA_DIR/files o private/files |
-| CATALOG_APP_URL | Origin exacto para escrituras; en Compose debe ser el HTTPS elegido |
-| CATALOG_PASSWORD_HASH / CATALOG_SESSION_SECRET | Valores de autenticación fuera de Docker; nunca publicar |
+| Variable                                                 | Uso actual                                                                                                       |
+| -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| CATALOG_LOCAL_PREVIEW                                    | true solo admite excepción de sesión en DEV loopback                                                             |
+| CATALOG_STORAGE                                          | postgres selecciona pg; los demás valores usan SQLite                                                            |
+| CATALOG_DATA_DIR                                         | Directorio SQLite/semilla; por defecto private                                                                   |
+| CATALOG_FILES_DIR                                        | Originales; por defecto CATALOG_DATA_DIR/files o private/files                                                   |
+| CATALOG_APP_URL                                          | Origin exacto para escrituras remotas; en Docker local acepta también el alias loopback del mismo puerto         |
+| CATALOG_PASSWORD_HASH / CATALOG_SESSION_SECRET           | Valores de autenticación fuera de Docker; nunca publicar                                                         |
 | CATALOG_PASSWORD_HASH_FILE / CATALOG_SESSION_SECRET_FILE | Leídos por docker/start.mjs al arrancar el contenedor; npm run dev/start no carga estos archivos automáticamente |
-| PGHOST / PGPORT / PGDATABASE / PGUSER | Conexión PostgreSQL; Compose fija host db, base catalog y usuario catalog_app |
-| PGPASSWORD_FILE / PGPASSWORD | pg admite archivo secreto preferente o valor de entorno |
+| PGHOST / PGPORT / PGDATABASE / PGUSER                    | Conexión PostgreSQL; Compose fija host db, base catalog y usuario catalog_app                                    |
+| PGPASSWORD_FILE / PGPASSWORD                             | pg admite archivo secreto preferente o valor de entorno                                                          |
 
-compose.yaml usa por defecto CATALOG_APP_URL=http://127.0.0.1:3010 para la instalación local. Para acceso remoto hay que definir la URL HTTPS real antes de recrear app. Las instrucciones no autorizan publicar ni cambiar la configuración del NAS.
-
+compose.yaml usa por defecto CATALOG_APP_URL=http://127.0.0.1:3010 para la instalación local. Puedes entrar también desde http://localhost:3010: ambos nombres apuntan a este ordenador y la app acepta el alias solo con el mismo puerto. Para acceso remoto hay que definir la URL HTTPS real antes de recrear app; allí se exige el Origin exacto. Las instrucciones no autorizan publicar ni cambiar la configuración del NAS.

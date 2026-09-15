@@ -97,6 +97,8 @@ Rechazos habituales: 401 sin sesión, 403 por Origin ajeno en escrituras, 400 po
 
 Producción cierra el acceso si faltan secretos. DEV requiere CATALOG_LOCAL_PREVIEW=true, NODE_ENV=development y hostname loopback; el comando dev escucha solo 127.0.0.1. La aplicación es de propietario único, sin registro público ni multitenancy. El rol catalog_app de PostgreSQL no es superusuario y no tiene CREATE después de inicializar. No se usa RLS de Supabase porque no existe acceso público directo a PostgreSQL ni usuarios múltiples; si se añade colaboración, debe incorporarse autorización por propietario y RLS antes de habilitarla.
 
+En Docker local, `sameOrigin` acepta el `Origin` configurado y el alias loopback complementario (`localhost` ↔ `127.0.0.1`) únicamente cuando `CATALOG_APP_URL` es HTTP loopback, el puerto coincide exactamente y el encabezado `Host` coincide con el `Origin` alternativo. No aplica a URLs HTTPS o hosts externos. La ruta de login diferencia falta de secretos y `Origin` no autorizado.
+
 Rate limit en memoria y sesiones sin revocación central son apropiados para esta primera instancia única; no se deben replicar servidores sin añadir almacenamiento común de intentos/sesiones. No se transmite telemetría propia ni se incrustan reproductores de terceros.
 
 ## Despliegue y portabilidad

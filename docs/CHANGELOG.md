@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 2026-09-15 · Acceso local desde localhost
+
+- El acceso privado acepta `http://localhost:3010` y `http://127.0.0.1:3010` como alias del mismo servicio Docker local, siempre con el mismo puerto. El control de `Origin` sigue rechazando otros sitios y la regla de HTTPS remoto permanece exacta.
+- El formulario distingue ahora un `Origin` no autorizado de secretos de acceso sin configurar, para no mostrar un diagnóstico falso.
+- Verificados inicio de sesión real en ambas direcciones, cookie de sesión, prueba de Chrome con contraseña sintética y catálogo PostgreSQL intacto.
+
 ## 2026-09-15 · Vista unificada por canción
 
 - “Mi espacio” y “Mi música” abren en una vista de 79 canciones en lugar de presentar las 210 fichas técnicas actuales como títulos independientes.

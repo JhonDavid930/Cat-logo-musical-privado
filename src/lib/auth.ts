@@ -66,5 +66,17 @@ export function sameOrigin(request: Request) {
       ? `http://${host}`
       : "";
   const expected = process.env.CATALOG_APP_URL || localOrigin;
-  return Boolean(expected && origin === expected);
+  if (!expected || !origin) return false;
+  if (origin === expected) return true;
+
+  const localAddress = /^http:\/\/(127\.0\.0\.1|localhost):(\d+)$/.exec(
+    expected,
+  );
+  if (!localAddress) return false;
+  const alternateHost =
+    localAddress[1] === "localhost" ? "127.0.0.1" : "localhost";
+  return (
+    host === `${alternateHost}:${localAddress[2]}` &&
+    origin === `http://${host}`
+  );
 }
